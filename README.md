@@ -24,7 +24,7 @@
      committed PNGs are those hashes (recorded in the PR that introduced
      them). -->
 
-A phone home screen as a website: an app grid with labels, a dock, a status bar with a real clock, a wallpaper system under all of it, and your pages opening as full-screen app sheets you can leave with one key. This is a **shell** archetype, not just a visual register. The register a shell wears is swappable; what this repo actually packages is the launcher.
+A phone home screen as a website: an app grid with labels, a dock, a status bar with a real clock, a wallpaper system under all of it, and your pages opening as full-screen app sheets you can leave with one key. This is a **shell** archetype rather than a visual register. The register a shell wears is swappable; what this repo actually packages is the launcher.
 
 The desktop sibling in this collection has a defining commercial exemplar to point at. This one does not. The phone-as-website idea lives in personal portfolio sites and in app landing pages that show a device, and the phrases people would use to search for it carry almost no measurable volume, which tells you what kind of thing it is: a shell that travels as a screenshot rather than as a search result. That shaped the build. The first frame has to be legible.
 
@@ -32,7 +32,7 @@ The desktop sibling in this collection has a defining commercial exemplar to poi
 
 The screenshot above is [`demo/index.html`](demo/index.html), a fictional personal tracker called Pawl whose pages are apps: about, how it works, pricing and the manual are icons on its home screen. That is the honesty test for a shell demo. A phone-shaped product has phone-shaped pages already, so arranging its site as a home screen describes the product instead of costuming it. A tracker you tap once a day is exactly that kind of product.
 
-**[Open it live](https://rampstackco.github.io/phone-launcher-theme/demo/)**, or clone the repo and open the file. There is no build step, no framework, no `node_modules`, and no server to start. <!-- TODO(public-flip): the Pages link goes live when this repo flips public; until then, clone and open the file. -->
+**[Open it live](https://rampstackco.github.io/phone-launcher-theme/demo/)**, or clone the repo and open the file. There is no build step, no framework, no `node_modules`, and no server to start.
 
 The demo declares no color of its own. It links `tokens/tokens.css`, `components/components.css`, `shell/shell.css` and `shell/shell.js` and reads every value from the first of those, so it stays honest about what the theme actually produces.
 
@@ -146,7 +146,16 @@ The launcher's color is worth one more sentence, because it is where a phone she
 
 ## Adjacency: this is not desktop-os-theme
 
-[desktop-os-theme](https://github.com/rampstackco/desktop-os-theme) is the other shell in this collection and the pilot this one clones its structure from: same `shell/` layout, same enhance-time ARIA doctrine, same wallpaper mechanism, same token discipline. The difference is the machine. That repo gives you a window pile you can cascade, minimize and raise, on a desktop that is designed at 1280 and transforms down. This one gives you one app at a time on a screen that is designed at 390 and is presented, not stretched, above it. If your content wants several things open side by side, go there. If your content is a column that someone reads on a phone, you are in the right repo. <!-- TODO(siblings): game-console-ui-theme is the third shell in the class; link it here when it exists. -->
+[desktop-os-theme](https://github.com/rampstackco/desktop-os-theme) is the other shell in this collection and the pilot this one clones its structure from: same `shell/` layout, same enhance-time ARIA doctrine, same wallpaper mechanism, same token discipline. The difference is the machine. That repo gives you a window pile you can cascade, minimize and raise, on a desktop that is designed at 1280 and transforms down. This one gives you one app at a time on a screen that is designed at 390 and is presented, not stretched, above it. If your content wants several things open side by side, go there. If your content is a column that someone reads on a phone, you are in the right repo.
+
+## The other shells
+
+Four repositories build shells. All four ship the same anatomy, and they differ in the machine.
+
+- **[retro-desktop-theme](https://github.com/rampstackco/retro-desktop-theme) is the pilot's own era pair**: the same window manager wearing 1995, beveled silver chrome on a teal ground. It and desktop-os-theme are the same shell at two temperatures, and each repo's CUSTOMIZE.md runs the road between them in one direction.
+- **[game-console-ui-theme](https://github.com/rampstackco/game-console-ui-theme) is the far end of the input question this repo also answers.** This one is built for a thumb at arm's length; that one is built for a remote control across a room, with arrow keys reading live geometry to move a ring between tiles. Between them they cover the two cases where a mouse is not present.
+
+**The class-decision log for all four lives in the pilot: [`docs/class-decisions.md`](https://github.com/rampstackco/desktop-os-theme/blob/main/docs/class-decisions.md).** This repo filed items 30 to 36 there, including the states-by-viewports rule and the clipping-container finding that came out of the defect PR #2 fixed.
 
 ## License and questions
 
