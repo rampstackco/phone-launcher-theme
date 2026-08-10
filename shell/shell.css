@@ -448,6 +448,14 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
    fixed to the bottom of the screen. The dock holds apps that are not on
    the grid, which is how phones actually work and which keeps every app in
    this document reachable from exactly one place.
+
+   WHERE PHONE FIDELITY LOSES TO ACCESSIBILITY, AND WHY. Real docks drop the
+   labels. This one keeps them. Without a visible label the only accessible
+   name a dock item can carry is an aria-label or a visually hidden span,
+   which is a name for screen readers and nobody else; four unlabelled
+   glyphs are also the hardest four targets on the screen for anyone who
+   does not already know the icon set. The label is smaller here than on the
+   grid and the plate shrinks to make room for it, which is the whole cost.
    -------------------------------------------------------------------------- */
 .ph-dock {
   padding: var(--ph-space-4);
