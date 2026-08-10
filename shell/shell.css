@@ -474,12 +474,21 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
   list-style: none;
 }
 
+/* The dock reserves the focus ring's reach at its bottom edge. This is the
+   one place in the shell where a ring can run into the screen's boundary:
+   the dock is the last thing on the screen, and its icons sit close enough
+   to the bottom that a ring drawn at full offset used to overshoot by a
+   fraction of a pixel. Before the device clipped its subtree that fraction
+   painted onto the bezel; after, it would have been shaved off. Reserving
+   the reach is what makes both wrong answers impossible, and it is written
+   as the ring's own tokens so it stays correct if the ring gets thicker. */
 .ph-live .ph-dock {
   flex: none;
   height: var(--ph-dock-height);
   display: flex;
   align-items: center;
-  padding: 0 var(--ph-space-3);
+  padding: 0 var(--ph-space-3)
+    calc(var(--ph-ring-width) + var(--ph-ring-offset));
 }
 
 .ph-live .ph-dock-list {
@@ -717,58 +726,60 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
     place-items: center;
     height: 100dvh;
     padding: var(--ph-space-8);
+
+    /* The device's outer size, derived once and inherited, because two
+       rules need it: the device itself, and the masthead that has to line
+       itself up against a device it is no longer inside. */
+    --ph-device-outer-w: calc(var(--ph-device-width) + 2 * var(--ph-bezel));
+    --ph-device-outer-h: min(
+      calc(var(--ph-device-height) + 2 * var(--ph-bezel)),
+      calc(100dvh - 2 * var(--ph-space-8))
+    );
   }
 
   /* The device body. It declines to cosplay a particular handset: no notch,
      no camera, no brand. It is a bezel, a screen and a shadow, all drawn
-     from tokens. */
+     from tokens.
+
+     THE BEZEL IS A BORDER, NOT PADDING, AND THAT IS THE WHOLE MECHANISM.
+     An element's overflow clip is taken at its PADDING edge, with the
+     corner radii reduced by the BORDER width and not by the padding. Draw
+     the bezel as padding and `overflow: hidden` clips at the device's outer
+     edge, which is no use to anything sitting on the screen. Draw it as a
+     border and the clip lands exactly on the screen, rounded by
+     (--ph-radius-device minus --ph-bezel), which is what tokens.css defines
+     --ph-radius-screen to be.
+
+     So this one declaration owns the screen's rounded boundary in every
+     state. Nothing inside the screen declares a corner of its own, which
+     means no child background can paint past it: not the dock, not a sheet,
+     not anything a later change adds. The defect that motivated this (an
+     open sheet's white background painting square corners underneath a
+     correctly rounded home bar) was reachable only because the boundary
+     used to be restated on each element that happened to touch it, and a
+     restated boundary is one an element can be added without.
+
+     A second thing falls out of the border. Absolutely positioned children
+     resolve against the padding box, which is now exactly the screen, so
+     the wallpaper and the sheets need no bezel offsets at all and the rules
+     that used to apply them are gone.
+
+     border-box sizing stays explicit. It keeps the SCREEN at the native 390
+     whether or not the page consuming this shell ships a box-sizing reset;
+     sized the other way, a reset subtracts the bezel from the screen and
+     the presentation stops being the phone it presents. */
   .ph-live .ph-device {
     position: relative;
     inset: auto;
 
-    /* border-box and the explicit bezel arithmetic together are what keep
-       the SCREEN at the native 390, whether or not the page that consumes
-       this shell ships a box-sizing reset. Sized the other way, a reset
-       silently subtracts the bezel from the screen and the desktop
-       presentation stops being the phone it claims to present. */
     box-sizing: border-box;
-    width: calc(var(--ph-device-width) + 2 * var(--ph-bezel));
-    height: min(
-      calc(var(--ph-device-height) + 2 * var(--ph-bezel)),
-      calc(100dvh - 2 * var(--ph-space-8))
-    );
-    padding: var(--ph-bezel);
-    background: var(--ph-ink);
+    width: var(--ph-device-outer-w);
+    height: var(--ph-device-outer-h);
+    border: var(--ph-bezel) solid var(--ph-ink);
     border-radius: var(--ph-radius-device);
+    overflow: hidden;
     box-shadow: var(--ph-shadow-device);
   }
-
-  /* No clipping container: each element that touches a screen corner
-     carries the screen radius itself, which is what lets the masthead
-     position outside the device without being cut off. */
-  .ph-live .ph-wallpaper {
-    inset: var(--ph-bezel);
-    border-radius: var(--ph-radius-screen);
-  }
-
-  .ph-live .ph-statusbar {
-    border-top-left-radius: var(--ph-radius-screen);
-    border-top-right-radius: var(--ph-radius-screen);
-  }
-
-  .ph-live .ph-dock,
-  .ph-live .ph-sheet-foot {
-    border-bottom-left-radius: var(--ph-radius-screen);
-    border-bottom-right-radius: var(--ph-radius-screen);
-  }
-
-  .ph-live .ph-sheet {
-    left: var(--ph-bezel);
-    right: var(--ph-bezel);
-    bottom: var(--ph-bezel);
-    top: calc(var(--ph-bezel) + var(--ph-statusbar-height));
-  }
-
 }
 
 /* --------------------------------------------------------------------------
@@ -784,16 +795,27 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
    the page rather than to the phone.
    -------------------------------------------------------------------------- */
 @media (min-width: 960px) and (min-height: 620px) {
+  /* Fixed rather than absolute, and this is the one place the clip above
+     costs something. The device now clips its whole subtree to the screen,
+     and the masthead is the single element that legitimately belongs
+     outside it. A fixed-position element's containing block is the
+     viewport, so an ancestor's overflow does not reach it; that holds as
+     long as nothing on the path establishes a containing block for fixed
+     descendants, which means no transform, filter, backdrop-filter,
+     perspective, contain or will-change on the stage or the device. Keeping
+     those off the device is now load-bearing, not a style preference.
+
+     The cost of leaving the device's coordinate space is that the offsets
+     have to be restated against the viewport. The device is centred both
+     ways in the stage, so its edges are computable from the outer size the
+     stage declares, and these three expressions are that arithmetic. */
   .ph-live .ph-widget {
-    position: absolute;
-    top: var(--ph-space-16);
-    right: calc(100% + var(--ph-space-8));
+    position: fixed;
+    top: calc((100dvh - var(--ph-device-outer-h)) / 2 + var(--ph-space-16));
+    right: calc((100vw + var(--ph-device-outer-w)) / 2 + var(--ph-space-8));
     width: clamp(
       180px,
-      calc(
-        (100vw - var(--ph-device-width) - 2 * var(--ph-bezel)) / 2 -
-          var(--ph-space-12)
-      ),
+      calc((100vw - var(--ph-device-outer-w)) / 2 - var(--ph-space-12)),
       340px
     );
     padding: 0;

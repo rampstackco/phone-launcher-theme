@@ -171,9 +171,18 @@
   --ph-radius-tight: 4px;     /* badges, tags, keyboard hints */
   --ph-radius: 10px;          /* buttons, inputs, cards */
   --ph-radius-icon: 16px;     /* the app plate */
-  --ph-radius-sheet: 22px;    /* an app sheet's top corners */
-  --ph-radius-screen: 40px;   /* the screen's corners, desktop presentation */
-  --ph-radius-device: 50px;   /* the device's outer edge, desktop presentation */
+  --ph-radius-sheet: 22px;    /* an app sheet's card corners, plain document */
+
+  /* The screen's corners in the presented-device states, and the single
+     authority for that boundary: shell.css draws the bezel as a BORDER and
+     clips the device, so the browser derives the screen's rounded corner as
+     the outer radius minus the border width. Deriving the outer radius the
+     other way round is what keeps those two in agreement for any bezel: no
+     child of the screen declares a corner of its own, so none can disagree
+     with this one. */
+  --ph-radius-screen: 40px;
+  --ph-radius-device: calc(var(--ph-radius-screen) + var(--ph-bezel));
+
   --ph-radius-pill: 999px;
 
   /* ----------------------------------------------------------------------
