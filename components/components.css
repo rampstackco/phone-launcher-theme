@@ -8,9 +8,13 @@
    would work on an ordinary page, and the shell would work around different
    components.
 
-   Every value here is a var() reference to tokens.css. There is not one
-   color literal in this file, which is what makes retheming a matter of
-   editing one file rather than auditing five.
+   There is not one color literal in this file, which is what makes
+   retheming a matter of editing one file rather than auditing five. Six
+   declarations carry a bare length: the 48px, 44px and 36px control
+   minimums, the textarea's 120px floor, the 1px press travel, and the 2px
+   bottom edge on the keyboard chip. Those are target-size and drawing
+   numbers rather than register values; everything a re-skin reaches is a
+   var() reference to tokens.css.
 
    The class names follow the shadcn shape: one base class carrying the
    structure, one variant class carrying the intent (ph-btn + ph-btn-primary).

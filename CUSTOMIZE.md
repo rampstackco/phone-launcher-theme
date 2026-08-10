@@ -13,7 +13,7 @@ The axes are the four from the [creative direction framework](https://rampstack.
 
 One thing makes this file different from its siblings in the collection: this theme is a shell, and a shell is orthogonal to its skin. The status bar, the app plates, the dock, the sheets and the device frame read every surface, border and shadow from `tokens/tokens.css`, so the launcher survives any recolor you give it. That is the collection's shells and registers thesis in one sentence: an archetype supplies the furniture, a register supplies the finish, and either can change without the other noticing. Move 1 proves it, and it also shows the one place this particular shell makes the proof harder than its desktop sibling did.
 
-Every move below is an edit to `tokens/tokens.css` only. Nothing else in the repo changes, because nothing else in the repo holds a value.
+Every move below is an edit to `tokens/tokens.css`, because that is where the values are. Where a move needs something the token file cannot reach, the text says so and names the file: Move 1's second caveat is the only place in this document that happens.
 
 ---
 
@@ -62,9 +62,9 @@ Sixteen tokens carry it, and the four at the end are the interesting part. Every
 
 ### The four fills are not optional here, and that is a shell finding
 
-In a register theme the semantic fills are badge paint. Miss them in a dark re-skin and a few badges go wrong. In this theme they are also the app plate tints, which means they are load-bearing chrome: six of the ten icons on the home screen are painted with them, and every glyph on top is drawn in `--ph-ink`.
+In a register theme the semantic fills are badge paint. Miss them in a dark re-skin and a few badges go wrong. In this theme they are also the app plate tints, which means they are load-bearing chrome: five of the demo's ten app plates are painted with them, and every glyph on a tinted plate is drawn in `--ph-ink`.
 
-So flipping the ink to cream while leaving the fills pale does not produce a few bad badges. It produces a home screen whose icons are gone. Here is that exact failure, captured rather than described, by running the same move and stopping after twelve tokens:
+So flipping the ink to cream while leaving the fills pale does not produce a few bad badges. It produces a home screen with holes in it. Here is that exact failure, captured rather than described, by running the same move and stopping after twelve tokens:
 
 ![The same re-skin stopped at twelve tokens: the tinted app plates keep their pale fills while the glyphs turn cream, leaving five icons on the home screen effectively blank](assets/reskin-trap.png)
 

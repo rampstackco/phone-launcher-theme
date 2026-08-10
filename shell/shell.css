@@ -35,8 +35,14 @@
    not a phone home screen, it is a desktop, and desktop-os-theme is already
    that.
 
-   Every value here is a var() reference to tokens.css. There is not one
-   color literal in this file.
+   There is not one color literal in this file, and every value a re-skin
+   needs to reach is a var() reference to tokens.css. Twelve declarations
+   carry a bare length: the off-screen offset of the skip link, the 16px
+   glyph boxes, the 32px status button, the 48px dock plate, two 36px and
+   44px control minimums, and the masthead's clamp bounds. Those are
+   drawing and target-size numbers rather than register values, and the
+   negative-claim audit in this repo's pull request lists them rather than
+   letting the sentence above overstate itself.
 
    Requires tokens.css. Load it, then components.css, then this, then the
    script:
@@ -369,9 +375,10 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
 }
 
 /* The plate is the glyph's tile. Its tint comes from the semantic fill set
-   the theme already ships, never from a second palette, and every glyph is
-   full ink on top of it, so the tint carries recognition and never carries
-   meaning. */
+   the theme already ships, never from a second palette, and a tinted plate
+   carries full ink on top of it, so the tint carries recognition and never
+   carries meaning. The accent plate below is the one exception, and it is
+   an exception on purpose. */
 .ph-app-plate {
   display: grid;
   place-items: center;

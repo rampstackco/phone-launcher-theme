@@ -115,8 +115,17 @@
      launcher has any color at all: they are also the app-plate tints. A
      home screen where every icon is one color reads as a wireframe rather
      than a launcher, and the alternative to a second palette is to spend
-     the one the theme already ships. Every plate takes full ink glyphs, so
-     the tint carries recognition and never carries meaning.
+     the one the theme already ships. Five of the demo's ten plates take a
+     fill, each under full-strength ink glyphs, so the tint carries
+     recognition and never carries meaning. The exception is the single
+     accent plate, which is the one app that is a conversion; its glyph
+     flips to accent ink and is measured with the accent, not here.
+
+     Because these four are chrome here rather than badge paint alone, they
+     are load-bearing for a re-skin in a way a register theme's fills are
+     not.
+     CUSTOMIZE.md shows what happens to the home screen when a dark re-skin
+     forgets them.
      ---------------------------------------------------------------------- */
   --ph-fill-success: #c8e8c6;
   --ph-fill-info: #cfe1f7;
