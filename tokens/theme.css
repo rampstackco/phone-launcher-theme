@@ -1,0 +1,212 @@
+/* ==========================================================================
+   phone-launcher-theme / Tailwind v4 adapter
+   --------------------------------------------------------------------------
+   Maps the tokens onto Tailwind's theme namespaces so you get utilities like
+   bg-ph-accent, shadow-ph-device, rounded-ph-icon, text-ph-h1, h-ph-dock.
+
+   There is not one literal value in this file. Every entry points at a custom
+   property declared in tokens.css, which stays the single source of truth. If
+   you want to change a value, change it there.
+
+   `@theme inline` is required rather than plain `@theme`: it makes the
+   generated utility carry the underlying var() reference instead of pointing
+   back at the theme variable, which is what keeps the token resolvable when
+   it was declared outside the utility's scope.
+
+   VERIFICATION.
+
+   Every namespace below was compiled and read back rather than assumed. An
+   entry filed under a namespace Tailwind does not process raises no error and
+   produces no utility, so an adapter can look complete in the file and ship
+   nothing. The only way to know is to compile it and grep the output.
+
+   Compiled with the Tailwind CLI against a bare project importing nothing but
+   tailwindcss and this file, with an HTML source listing one utility per
+   entry. Run on tailwindcss 4.3.3 and 4.1.0 under Node 24.14.0, identical
+   results on both; 4.0.0 was not tested. 68 entries across 12 namespaces,
+   all 12 generate.
+
+     namespace          n  documented  generates  sample utility
+     --color-*         18  yes         yes        bg-ph-ground
+     --shadow-*         3  yes         yes        shadow-ph-device
+     --radius-*         7  yes         yes        rounded-ph-icon
+     --border-width-*   1  no          yes        border-ph
+     --font-*           2  yes         yes        font-ph-sans
+     --font-weight-*    4  yes         yes        font-ph-body
+     --text-*           8  yes         yes        text-ph-display
+     --leading-*        3  yes         yes        leading-ph-tight
+     --tracking-*       2  yes         yes        tracking-ph-wide
+     --spacing-*       17  yes         yes        p-ph-4, h-ph-dock
+     --container-*      2  yes         yes        max-w-ph-device
+     --ease-*           1  yes         yes        ease-ph
+
+   ONE NAMESPACE CARRIES A CAVEAT.
+
+   --border-width-* is the single row above that is missing from Tailwind's
+   documented namespace table. The engine supports it anyway, and it compiles
+   to what you would want:
+
+     .border-ph { border-style: var(--tw-border-style);
+                  border-width: var(--ph-border-width); }
+
+   Two controls, with distinguishable names so neither can be mistaken for a
+   real entry or for the other, so that result is not an artifact of how it
+   was measured:
+
+     Delete the --border-width-ph line and recompile: .border-ph disappears
+     from the output while the color utility .border-ph-border stays. That
+     line is what produces it, and nothing else in the file does.
+
+     Add --border-style-ph-ghostgate-probe to the same block, list
+     border-ph-ghostgate-probe in the source, and recompile: nothing named
+     ghostgate appears anywhere in the output. A namespace Tailwind does not
+     process fails silently and produces nothing, which is the failure this
+     verification exists to catch, and the same harness sees the difference.
+
+   The line stays because it works, and because border-ph is the name a
+   reader expects to find next to rounded-ph. It is flagged because an
+   undocumented namespace comes with no compatibility promise, and a future
+   release can drop it without that counting as a breaking change.
+
+   If it is ever dropped, the escape hatch needs no new token, because the
+   value already lives in tokens.css. These compile to identical declarations:
+
+     border-ph      ->  border-(length:--ph-border-width)
+     border-t-ph    ->  border-t-(length:--ph-border-width)
+                        border-[length:var(--ph-border-width)] is the longhand
+
+   THE length: HINT IS LOAD-BEARING. Drop it and Tailwind reads the variable
+   as a color instead of a length. The class still compiles, the rule is still
+   valid CSS, and no border width is set by it at all:
+
+     border-(--ph-border-width)        border-color: var(--ph-border-width);
+     border-[var(--ph-border-width)]   border-color: var(--ph-border-width);
+     border-t-(--ph-border-width)      border-top-color: var(--ph-border-width);
+
+   That is a border color declared as 1px, which sets nothing and warns about
+   nothing. Both shapes were compiled on 4.3.3 to confirm it, and the bracket
+   pair splits the same way on v3 3.4.17. Take the hinted forms and no others.
+
+   TWO GROUPS ARE DELIBERATELY UNMAPPED, for opposite reasons.
+
+   The --ph-z-* layering tokens have no namespace to live in (z-index
+   utilities are static in v4), so consume them as arbitrary values:
+
+     z-[var(--ph-z-chrome)]
+
+   --ph-app-columns is the more interesting one, because the obvious home for
+   it is a trap that does NOT fail silently. Filing a probe entry as
+   --columns-ph-appgrid-probe compiles, on both 4.3.3 and 4.1.0, to:
+
+     .columns-ph-appgrid-probe { columns: 4; }
+
+   That is the CSS multi-column property, not a grid track count. A grid of
+   four app icons asked for through that namespace would silently become a
+   four-column text flow. Consume the count as an arbitrary value instead:
+
+     grid-cols-[repeat(var(--ph-app-columns),minmax(0,1fr))]
+
+   which is the utility spelling of what shell.css writes as plain CSS:
+
+     grid-template-columns: repeat(var(--ph-app-columns), minmax(0, 1fr));
+
+   Usage in your stylesheet:
+
+     @import "tailwindcss";
+     @import "./path/to/tokens/theme.css";
+
+   theme.css pulls in tokens.css itself, so one import is enough.
+   ========================================================================== */
+
+@import "./tokens.css";
+
+@theme inline {
+  /* Color */
+  --color-ph-ground: var(--ph-ground);
+  --color-ph-stage: var(--ph-stage);
+  --color-ph-scene: var(--ph-scene);
+  --color-ph-surface: var(--ph-surface);
+  --color-ph-chrome: var(--ph-chrome);
+  --color-ph-surface-muted: var(--ph-surface-muted);
+  --color-ph-ink: var(--ph-ink);
+  --color-ph-ink-muted: var(--ph-ink-muted);
+  --color-ph-accent: var(--ph-accent);
+  --color-ph-accent-ink: var(--ph-accent-ink);
+  --color-ph-destructive: var(--ph-destructive);
+  --color-ph-destructive-ink: var(--ph-destructive-ink);
+  --color-ph-success: var(--ph-fill-success);
+  --color-ph-info: var(--ph-fill-info);
+  --color-ph-warning: var(--ph-fill-warning);
+  --color-ph-danger: var(--ph-fill-danger);
+  --color-ph-border: var(--ph-border);
+  --color-ph-border-strong: var(--ph-border-strong);
+
+  /* Shadow */
+  --shadow-ph-sm: var(--ph-shadow-sm);
+  --shadow-ph-raised: var(--ph-shadow-raised);
+  --shadow-ph-device: var(--ph-shadow-device);
+
+  /* Radius */
+  --radius-ph-tight: var(--ph-radius-tight);
+  --radius-ph: var(--ph-radius);
+  --radius-ph-icon: var(--ph-radius-icon);
+  --radius-ph-sheet: var(--ph-radius-sheet);
+  --radius-ph-screen: var(--ph-radius-screen);
+  --radius-ph-device: var(--ph-radius-device);
+  --radius-ph-pill: var(--ph-radius-pill);
+
+  /* Border width */
+  --border-width-ph: var(--ph-border-width);
+
+  /* Type */
+  --font-ph-sans: var(--ph-font-sans);
+  --font-ph-mono: var(--ph-font-mono);
+
+  --font-weight-ph-body: var(--ph-weight-body);
+  --font-weight-ph-medium: var(--ph-weight-medium);
+  --font-weight-ph-bold: var(--ph-weight-bold);
+  --font-weight-ph-display: var(--ph-weight-display);
+
+  --text-ph-display: var(--ph-text-display);
+  --text-ph-h1: var(--ph-text-h1);
+  --text-ph-h2: var(--ph-text-h2);
+  --text-ph-h3: var(--ph-text-h3);
+  --text-ph-lead: var(--ph-text-lead);
+  --text-ph-body: var(--ph-text-body);
+  --text-ph-sm: var(--ph-text-sm);
+  --text-ph-xs: var(--ph-text-xs);
+
+  --leading-ph-tight: var(--ph-leading-tight);
+  --leading-ph-snug: var(--ph-leading-snug);
+  --leading-ph-body: var(--ph-leading-body);
+
+  --tracking-ph-tight: var(--ph-tracking-tight);
+  --tracking-ph-wide: var(--ph-tracking-wide);
+
+  /* Space */
+  --spacing-ph-1: var(--ph-space-1);
+  --spacing-ph-2: var(--ph-space-2);
+  --spacing-ph-3: var(--ph-space-3);
+  --spacing-ph-4: var(--ph-space-4);
+  --spacing-ph-6: var(--ph-space-6);
+  --spacing-ph-8: var(--ph-space-8);
+  --spacing-ph-12: var(--ph-space-12);
+  --spacing-ph-16: var(--ph-space-16);
+
+  --spacing-ph-statusbar: var(--ph-statusbar-height);
+  --spacing-ph-dock: var(--ph-dock-height);
+  --spacing-ph-sheet-header: var(--ph-sheet-header);
+  --spacing-ph-plate: var(--ph-app-plate);
+  --spacing-ph-cell: var(--ph-app-cell);
+  --spacing-ph-gap: var(--ph-app-gap);
+  --spacing-ph-bezel: var(--ph-bezel);
+  --spacing-ph-indicator-w: var(--ph-indicator-width);
+  --spacing-ph-indicator-h: var(--ph-indicator-height);
+
+  /* Width caps */
+  --container-ph-device: var(--ph-device-width);
+  --container-ph-measure: var(--ph-measure);
+
+  /* Motion */
+  --ease-ph: var(--ph-ease);
+}
