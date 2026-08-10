@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Components | phone-launcher-theme</title>
+    <meta
+      name="description"
+      content="The five in-sheet components of phone-launcher-theme, rendered live with the markup to copy."
+    />
+
+    <!-- The real token file and the real component file, in that order. This
+         page holds no copy of either. The shell is deliberately absent here:
+         these components are what lives inside an app sheet, and this page
+         shows they work on an ordinary page too. See demo/index.html for the
+         shell. -->
+    <link rel="stylesheet" href="../tokens/tokens.css" />
+    <link rel="stylesheet" href="./components.css" />
+
+    <style>
+      /* Page chrome for this gallery only. Tokens throughout, no literals. */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--ph-ground);
+        color: var(--ph-ink);
+        font-family: var(--ph-font-sans);
+        font-size: var(--ph-text-body);
+        line-height: var(--ph-leading-body);
+      }
+
+      .wrap {
+        max-width: var(--ph-measure);
+        margin: 0 auto;
+        padding: var(--ph-space-12) var(--ph-space-4) var(--ph-space-16);
+      }
+
+      h1 {
+        margin: 0 0 var(--ph-space-3);
+        font-size: var(--ph-text-h1);
+        font-weight: var(--ph-weight-display);
+        line-height: var(--ph-leading-tight);
+        letter-spacing: var(--ph-tracking-tight);
+      }
+
+      .page-lead {
+        margin: 0 0 var(--ph-space-12);
+        font-size: var(--ph-text-lead);
+        color: var(--ph-ink-muted);
+      }
+
+      section {
+        margin-top: var(--ph-space-16);
+      }
+
+      h2 {
+        margin: 0 0 var(--ph-space-2);
+        font-size: var(--ph-text-h2);
+        font-weight: var(--ph-weight-display);
+        line-height: var(--ph-leading-snug);
+        letter-spacing: var(--ph-tracking-tight);
+      }
+
+      .note {
+        margin: 0 0 var(--ph-space-6);
+        color: var(--ph-ink-muted);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--ph-space-4);
+        margin-bottom: var(--ph-space-6);
+      }
+
+      .stack {
+        display: grid;
+        gap: var(--ph-space-6);
+        margin-bottom: var(--ph-space-6);
+      }
+
+      pre {
+        overflow-x: auto;
+        margin: 0;
+        padding: var(--ph-space-4);
+        background: var(--ph-surface-muted);
+        border: var(--ph-border-width) solid var(--ph-border);
+        border-radius: var(--ph-radius);
+      }
+
+      code {
+        font-family: var(--ph-font-mono);
+        font-size: var(--ph-text-sm);
+        line-height: var(--ph-leading-body);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <h1>Components</h1>
+      <p class="page-lead">
+        The five components that live inside an app sheet: button, panel,
+        badge, field, list. Rendered from the real stylesheets with the markup
+        to copy. This page loads no shell, which is the point: the components
+        work on an ordinary page, and the launcher in
+        <a href="../demo/index.html">the demo</a> works around them.
+      </p>
+
+      <!-- ================= BUTTON ================= -->
+      <section aria-labelledby="h-btn">
+        <h2 id="h-btn">Button</h2>
+        <p class="note">
+          Four intents, one size modifier, and a block modifier that is the
+          normal shape in a 390px column. The press is one pixel of travel and
+          the shadow going flat.
+        </p>
+
+        <div class="row">
+          <button class="ph-btn ph-btn-primary" type="button">Send the links</button>
+          <button class="ph-btn ph-btn-default" type="button">Export</button>
+          <button class="ph-btn ph-btn-ghost" type="button">Cancel</button>
+          <button class="ph-btn ph-btn-destructive" type="button">Delete data</button>
+          <button class="ph-btn ph-btn-primary" type="button" disabled>Saving</button>
+        </div>
+
+        <div class="row">
+          <button class="ph-btn ph-btn-sm ph-btn-primary" type="button">Small</button>
+          <button class="ph-btn ph-btn-sm ph-btn-default" type="button">Small</button>
+        </div>
+
+        <div class="stack">
+          <button class="ph-btn ph-btn-primary ph-btn-block" type="button">
+            Full width, the phone default
+          </button>
+        </div>
+
+        <pre><code>&lt;button class="ph-btn ph-btn-primary" type="button"&gt;Send the links&lt;/button&gt;
+&lt;button class="ph-btn ph-btn-default" type="button"&gt;Export&lt;/button&gt;
+&lt;button class="ph-btn ph-btn-ghost" type="button"&gt;Cancel&lt;/button&gt;
+&lt;button class="ph-btn ph-btn-destructive" type="button"&gt;Delete data&lt;/button&gt;
+&lt;button class="ph-btn ph-btn-sm ph-btn-primary" type="button"&gt;Small&lt;/button&gt;
+&lt;button class="ph-btn ph-btn-primary ph-btn-block" type="button"&gt;Full width&lt;/button&gt;</code></pre>
+      </section>
+
+      <!-- ================= PANEL ================= -->
+      <section aria-labelledby="h-panel">
+        <h2 id="h-panel">Panel</h2>
+        <p class="note">
+          A surface inside a sheet. The muted variant recedes; use it for the
+          thing the reader compares against, not the thing you want chosen.
+        </p>
+
+        <div class="stack">
+          <div class="ph-panel">
+            <h3 class="ph-panel-title">The month line</h3>
+            <p class="ph-panel-body">
+              On the first of the month the last month collapses into a single
+              line of numbers, which is the only history the app keeps.
+            </p>
+          </div>
+          <div class="ph-panel ph-panel-muted">
+            <h3 class="ph-panel-title">Quiet reminders</h3>
+            <p class="ph-panel-body">
+              One notification a day at a time you pick, or none at all. There
+              is no second reminder that asks whether you are sure.
+            </p>
+          </div>
+        </div>
+
+        <pre><code>&lt;div class="ph-panel"&gt;
+  &lt;h3 class="ph-panel-title"&gt;The month line&lt;/h3&gt;
+  &lt;p class="ph-panel-body"&gt;On the first of the month...&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="ph-panel ph-panel-muted"&gt;...&lt;/div&gt;</code></pre>
+      </section>
+
+      <!-- ================= BADGE ================= -->
+      <section aria-labelledby="h-badge">
+        <h2 id="h-badge">Badge</h2>
+        <p class="note">
+          Ink text on a pale fill, always. Meaning lives in the hue and
+          legibility never depends on it. The same four fills tint the app
+          plates on the home screen, under the same rule.
+        </p>
+
+        <div class="row">
+          <span class="ph-badge ph-badge-neutral">v1.4</span>
+          <span class="ph-badge ph-badge-success">Synced</span>
+          <span class="ph-badge ph-badge-info">Beta</span>
+          <span class="ph-badge ph-badge-warning">Paused</span>
+          <span class="ph-badge ph-badge-danger">Export failed</span>
+        </div>
+
+        <pre><code>&lt;span class="ph-badge ph-badge-neutral"&gt;v1.4&lt;/span&gt;
+&lt;span class="ph-badge ph-badge-success"&gt;Synced&lt;/span&gt;
+&lt;span class="ph-badge ph-badge-info"&gt;Beta&lt;/span&gt;
+&lt;span class="ph-badge ph-badge-warning"&gt;Paused&lt;/span&gt;
+&lt;span class="ph-badge ph-badge-danger"&gt;Export failed&lt;/span&gt;</code></pre>
+      </section>
+
+      <!-- ================= FIELD ================= -->
+      <section aria-labelledby="h-field">
+        <h2 id="h-field">Field</h2>
+        <p class="note">
+          Label, input, hint, error. The input is 16px and 48px tall, which is
+          what stops iOS Safari zooming on focus and what a thumb needs.
+        </p>
+
+        <div class="stack">
+          <div class="ph-field">
+            <label class="ph-label" for="c-email">Email</label>
+            <input
+              class="ph-input"
+              id="c-email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+            <p class="ph-hint">One email with two links. That is the funnel.</p>
+          </div>
+
+          <div class="ph-field">
+            <label class="ph-label" for="c-thing">Thing to keep up</label>
+            <input
+              class="ph-input"
+              id="c-thing"
+              type="text"
+              value="six things"
+              aria-invalid="true"
+              aria-describedby="c-thing-err"
+            />
+            <p class="ph-error" id="c-thing-err">Five is the cap. Pick which five.</p>
+          </div>
+
+          <div class="ph-field">
+            <label class="ph-label" for="c-off">Account</label>
+            <input class="ph-input" id="c-off" type="text" value="none" disabled />
+          </div>
+        </div>
+
+        <pre><code>&lt;div class="ph-field"&gt;
+  &lt;label class="ph-label" for="email"&gt;Email&lt;/label&gt;
+  &lt;input class="ph-input" id="email" type="email" /&gt;
+  &lt;p class="ph-hint"&gt;One email with two links.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;input class="ph-input" aria-invalid="true" aria-describedby="err" /&gt;
+&lt;p class="ph-error" id="err"&gt;Five is the cap.&lt;/p&gt;</code></pre>
+      </section>
+
+      <!-- ================= LIST ================= -->
+      <section aria-labelledby="h-list">
+        <h2 id="h-list">List</h2>
+        <p class="note">
+          Name, optional description, value at the end. On a phone this is not
+          one component among five; it is the shape most screens are made of.
+        </p>
+
+        <ul class="ph-list stack">
+          <li class="ph-list-row">
+            <span>
+              <span class="ph-list-name">Walk</span>
+              <span class="ph-list-desc">Started 6 March</span>
+            </span>
+            <span class="ph-list-end">154</span>
+          </li>
+          <li class="ph-list-row">
+            <span>
+              <span class="ph-list-name">Strings</span>
+              <span class="ph-list-desc">Twenty minutes counts</span>
+            </span>
+            <span class="ph-list-end">61</span>
+          </li>
+          <li class="ph-list-row">
+            <span class="ph-list-name">Leave an app</span>
+            <span class="ph-list-end"><kbd class="ph-kbd">Esc</kbd></span>
+          </li>
+        </ul>
+
+        <pre><code>&lt;ul class="ph-list"&gt;
+  &lt;li class="ph-list-row"&gt;
+    &lt;span&gt;
+      &lt;span class="ph-list-name"&gt;Walk&lt;/span&gt;
+      &lt;span class="ph-list-desc"&gt;Started 6 March&lt;/span&gt;
+    &lt;/span&gt;
+    &lt;span class="ph-list-end"&gt;154&lt;/span&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;kbd class="ph-kbd"&gt;Esc&lt;/kbd&gt;</code></pre>
+      </section>
+    </div>
+  </body>
+</html>

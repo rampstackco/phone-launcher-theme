@@ -1,0 +1,348 @@
+/* ==========================================================================
+   phone-launcher-theme / components
+   --------------------------------------------------------------------------
+   Five components for the content that lives INSIDE an app sheet: button,
+   panel, badge, field, list. The sheet itself, the app icons, the dock and
+   the status bar are not here; they are the shell, and they live in
+   shell/shell.css. That split is the point of this theme: these components
+   would work on an ordinary page, and the shell would work around different
+   components.
+
+   There is not one color literal in this file, which is what makes
+   retheming a matter of editing one file rather than auditing five. Six
+   declarations carry a bare length: the 48px, 44px and 36px control
+   minimums, the textarea's 120px floor, the 1px press travel, and the 2px
+   bottom edge on the keyboard chip. Those are target-size and drawing
+   numbers rather than register values; everything a re-skin reaches is a
+   var() reference to tokens.css.
+
+   The class names follow the shadcn shape: one base class carrying the
+   structure, one variant class carrying the intent (ph-btn + ph-btn-primary).
+
+   Requires tokens.css to be loaded first. Load it explicitly rather than
+   letting this file pull it in, so the dependency is visible at the call
+   site:
+
+     <link rel="stylesheet" href="tokens/tokens.css" />
+     <link rel="stylesheet" href="components/components.css" />
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Shared focus. The ring is the accent, offset outside the element, on
+   everything interactive.
+   -------------------------------------------------------------------------- */
+.ph-btn:focus-visible,
+.ph-input:focus-visible,
+.ph-focusable:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: var(--ph-ring-offset);
+}
+
+/* ==========================================================================
+   BUTTON
+   Variants: ph-btn-primary, ph-btn-default, ph-btn-ghost, ph-btn-destructive
+   Sizes:    ph-btn-sm, (base)
+   Modifier: ph-btn-block, because on a 390px column the full-width button is
+             the default shape rather than the exception.
+   ========================================================================== */
+.ph-btn {
+  /* 44px minimum on both axes. Anything smaller fails on a real thumb, and
+     this theme is designed thumb-first. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ph-space-2);
+  min-height: 48px;
+  padding: var(--ph-space-3) var(--ph-space-6);
+
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-body);
+  font-weight: var(--ph-weight-medium);
+  line-height: var(--ph-leading-snug);
+  text-decoration: none;
+  white-space: nowrap;
+
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-radius: var(--ph-radius);
+  box-shadow: var(--ph-shadow-sm);
+  cursor: pointer;
+
+  transition:
+    transform var(--ph-duration) var(--ph-ease),
+    box-shadow var(--ph-duration) var(--ph-ease);
+}
+
+/* The press is one pixel of travel and the shadow going flat: a tap that
+   feels mechanical without performing. */
+.ph-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.ph-btn:disabled,
+.ph-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ph-btn-primary {
+  background: var(--ph-accent);
+  color: var(--ph-accent-ink);
+  border-color: var(--ph-accent);
+}
+
+.ph-btn-default {
+  background: var(--ph-surface);
+  color: var(--ph-ink);
+}
+
+.ph-btn-default:hover {
+  background: var(--ph-chrome);
+}
+
+.ph-btn-destructive {
+  background: var(--ph-destructive);
+  color: var(--ph-destructive-ink);
+  border-color: var(--ph-destructive);
+}
+
+/* The ghost sits flat until hovered, which is how the reader learns it was
+   a button all along. */
+.ph-btn-ghost {
+  background: transparent;
+  color: var(--ph-ink);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ph-btn-ghost:hover {
+  background: var(--ph-surface-muted);
+}
+
+.ph-btn-sm {
+  min-height: 36px;
+  padding: var(--ph-space-1) var(--ph-space-3);
+  font-size: var(--ph-text-sm);
+}
+
+.ph-btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* ==========================================================================
+   PANEL
+   A surface inside a sheet. Variants: (base), ph-panel-muted.
+   Parts: ph-panel-title, ph-panel-body.
+   ========================================================================== */
+.ph-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ph-space-2);
+  padding: var(--ph-space-4);
+
+  background: var(--ph-surface);
+  color: var(--ph-ink);
+  border: var(--ph-border-width) solid var(--ph-border);
+  border-radius: var(--ph-radius);
+  box-shadow: var(--ph-shadow-sm);
+}
+
+.ph-panel-muted {
+  background: var(--ph-surface-muted);
+  box-shadow: none;
+}
+
+.ph-panel-title {
+  margin: 0;
+  font-size: var(--ph-text-h3);
+  font-weight: var(--ph-weight-bold);
+  line-height: var(--ph-leading-snug);
+  letter-spacing: var(--ph-tracking-tight);
+}
+
+.ph-panel-body {
+  margin: 0;
+  color: var(--ph-ink-muted);
+  font-size: var(--ph-text-body);
+  line-height: var(--ph-leading-body);
+}
+
+/* ==========================================================================
+   BADGE
+   Variants: ph-badge-neutral, ph-badge-success, ph-badge-info,
+             ph-badge-warning, ph-badge-danger
+   ========================================================================== */
+.ph-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ph-space-1);
+  padding: var(--ph-space-1) var(--ph-space-2);
+
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-xs);
+  font-weight: var(--ph-weight-bold);
+  line-height: var(--ph-leading-snug);
+  letter-spacing: var(--ph-tracking-wide);
+  text-transform: uppercase;
+
+  /* Ink on every fill. Meaning lives in the hue; legibility never depends
+     on it. The same four fills tint the app plates in shell.css, under the
+     same rule. */
+  color: var(--ph-ink);
+  border: var(--ph-border-width) solid var(--ph-border);
+  border-radius: var(--ph-radius-tight);
+  white-space: nowrap;
+}
+
+.ph-badge-neutral {
+  background: var(--ph-surface-muted);
+}
+
+.ph-badge-success {
+  background: var(--ph-fill-success);
+}
+
+.ph-badge-info {
+  background: var(--ph-fill-info);
+}
+
+.ph-badge-warning {
+  background: var(--ph-fill-warning);
+}
+
+.ph-badge-danger {
+  background: var(--ph-fill-danger);
+}
+
+/* ==========================================================================
+   FIELD
+   Parts:  ph-field, ph-label, ph-input, ph-hint, ph-error
+   States: default, :focus, aria-invalid="true", :disabled
+   ========================================================================== */
+.ph-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ph-space-2);
+}
+
+.ph-label {
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-bold);
+  color: var(--ph-ink);
+}
+
+.ph-input {
+  /* 16px minimum, which is what stops iOS Safari zooming on focus. On a
+     theme whose native viewport is a phone, that is not a detail. */
+  width: 100%;
+  min-height: 48px;
+  padding: var(--ph-space-3) var(--ph-space-4);
+
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-body);
+  color: var(--ph-ink);
+  background: var(--ph-surface);
+
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-radius: var(--ph-radius);
+}
+
+.ph-input::placeholder {
+  color: var(--ph-ink-muted);
+}
+
+.ph-input:focus {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: var(--ph-ring-offset);
+}
+
+.ph-input[aria-invalid="true"] {
+  border-color: var(--ph-destructive);
+}
+
+.ph-input:disabled {
+  background: var(--ph-surface-muted);
+  color: var(--ph-ink-muted);
+  cursor: not-allowed;
+}
+
+.ph-hint {
+  font-size: var(--ph-text-sm);
+  color: var(--ph-ink-muted);
+}
+
+.ph-error {
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-bold);
+  color: var(--ph-destructive);
+}
+
+/* Textarea inherits the input treatment. */
+.ph-input:where(textarea) {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ==========================================================================
+   LIST
+   Settings-style rows: a name, an optional description, a value or control
+   at the end. On a phone this is not one component among five; it is the
+   shape most of the screens in any real app are made of.
+   Parts: ph-list, ph-list-row, ph-list-name, ph-list-desc, ph-list-end
+   ========================================================================== */
+.ph-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--ph-border-width) solid var(--ph-border);
+  border-radius: var(--ph-radius);
+  background: var(--ph-surface);
+  overflow: hidden;
+}
+
+.ph-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ph-space-4);
+  padding: var(--ph-space-3) var(--ph-space-4);
+}
+
+.ph-list-row + .ph-list-row {
+  border-top: var(--ph-border-width) solid var(--ph-border);
+}
+
+.ph-list-name {
+  font-weight: var(--ph-weight-medium);
+  color: var(--ph-ink);
+}
+
+.ph-list-desc {
+  display: block;
+  font-size: var(--ph-text-sm);
+  color: var(--ph-ink-muted);
+}
+
+.ph-list-end {
+  flex: none;
+  font-family: var(--ph-font-mono);
+  font-size: var(--ph-text-sm);
+  color: var(--ph-ink-muted);
+}
+
+/* A keyboard hint chip, for the shell's keyboard story. Real text in a kbd
+   element, not an image of a key. */
+.ph-kbd {
+  display: inline-block;
+  padding: 0 var(--ph-space-2);
+  font-family: var(--ph-font-mono);
+  font-size: var(--ph-text-xs);
+  line-height: 1.8;
+  color: var(--ph-ink);
+  background: var(--ph-chrome);
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--ph-radius-tight);
+}

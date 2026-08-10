@@ -1,0 +1,303 @@
+/* ==========================================================================
+   phone-launcher-theme / tokens
+   --------------------------------------------------------------------------
+   This file is the single source of truth. Every literal value in the theme
+   lives here exactly once. The Tailwind adapters next to it (theme.css for
+   v4, preset.js for v3) hold no values of their own; they point at these
+   custom properties with var().
+
+   Each group is annotated with the creative-direction axis the choice serves.
+   The four axes are tone register, aesthetic philosophy, audience
+   relationship, and sensory ambition. Read them at
+   https://rampstack.co/framework/creative-direction
+
+   This theme is a shell: the tokens describe both a visual register (a calm
+   cool-paper phone) and the geometry of a launcher that shell/shell.css
+   draws with them. The SHELL GEOMETRY group near the bottom is the part a
+   register theme would not have.
+
+   Contrast ratios in the comments are WCAG 2.1 relative-luminance figures,
+   measured against the surface named. This theme has five light surfaces a
+   reader will find text on (surface, chrome, ground, surface-muted, stage),
+   so foregrounds are quoted against the worst of them where it matters.
+   Every text pairing here clears AA.
+   ========================================================================== */
+
+:root {
+  /* ----------------------------------------------------------------------
+     GROUND, STAGE AND SCENE
+     Aesthetic philosophy axis. The ground is the home screen itself: cool
+     paper rather than a photograph, because a launcher's job is to make six
+     small objects findable and a busy wallpaper is the enemy of that. The
+     stage is the surface the phone SITS ON, and it exists only above the
+     desktop breakpoint, where the launcher is presented as an object rather
+     than filling the viewport. It is one step darker than the ground so the
+     device reads as a thing on a table. The scene color is the wallpaper's
+     drawing ink and the far edge of the quiet field: 1.20:1 against the
+     ground, which is texture, not information, and nothing may depend on
+     seeing it.
+     ---------------------------------------------------------------------- */
+  --ph-ground: #e9ecf1;    /* the home screen */
+  --ph-stage: #d8dde5;     /* the surface the device sits on, desktop only */
+  --ph-scene: #d3d9e2;     /* wallpaper line art, 1.20:1 on ground, decorative */
+
+  /* The quiet wallpaper: light from the top of the screen, settling toward
+     the scene tone at the bottom edge. It is a value, so it lives here with
+     the other values, and it is declared once because two rules need it: the
+     plain document's page ground, and the screen's wallpaper layer once the
+     shell is live. Both are in shell.css. */
+  --ph-wallpaper-quiet: radial-gradient(
+    120% 68% at 50% 0%,
+    var(--ph-chrome) 0%,
+    var(--ph-ground) 52%,
+    var(--ph-scene) 100%
+  );
+
+  /* ----------------------------------------------------------------------
+     SURFACES
+     Aesthetic philosophy axis. An app sheet is white so its content sits a
+     clear step above the home screen; chrome is a cool near-white for the
+     status bar, the dock plate and the sheet header, so they read as part
+     of the device without dissolving into the page. The muted surface is
+     for recessed things inside a sheet: code, table stripes, quiet cards.
+     ---------------------------------------------------------------------- */
+  --ph-surface: #ffffff;        /* app sheet body */
+  --ph-chrome: #f4f6f9;         /* status bar, dock plate, sheet header */
+  --ph-surface-muted: #e3e7ee;  /* recessed panels inside a sheet */
+
+  /* ----------------------------------------------------------------------
+     INK
+     Audience relationship axis. Cool near-black rather than #000, matched
+     to the cool paper so type reads as printed on it. Muted ink is quoted
+     against its worst surface because secondary text appears on all of
+     them.
+       ink on surface 17.96:1, on chrome 16.59:1, on ground 15.17:1,
+       on surface-muted 14.48:1, on stage 13.17:1
+       ink-muted on surface 6.76:1, on chrome 6.24:1, on ground 5.71:1,
+       on surface-muted 5.45:1, on stage 4.95:1
+     ---------------------------------------------------------------------- */
+  --ph-ink: #14171c;
+  --ph-ink-muted: #545c68;
+
+  /* ----------------------------------------------------------------------
+     THE ACCENT
+     Sensory ambition axis. Exactly one accent, a deep working green, spent
+     on intent: the primary button, the focus ring, a link, and the one
+     app plate that is the site's actual conversion. A launcher is already
+     the loudest structural idea in the collection, so the color budget
+     stays small, which is what keeps it on the Considered side of the
+     sensory axis.
+       white on accent 6.43:1. accent on surface 6.43:1, on chrome 5.94:1,
+       on ground 5.43:1, on stage 4.72:1
+     ---------------------------------------------------------------------- */
+  --ph-accent: #0f6b58;
+  --ph-accent-ink: #ffffff;
+
+  /* ----------------------------------------------------------------------
+     DESTRUCTIVE
+     Tone register axis. One red, for the action that deletes something and
+     for invalid input, nothing else. The back control does NOT use it:
+     leaving an app is the most common thing anyone will do here, and a red
+     back arrow teaches the reader to fear it.
+       white on destructive 6.54:1. destructive on surface 6.54:1
+     ---------------------------------------------------------------------- */
+  --ph-destructive: #b3242f;
+  --ph-destructive-ink: #ffffff;
+
+  /* ----------------------------------------------------------------------
+     FLAT SEMANTIC FILLS
+     Aesthetic philosophy axis. Badge fills pale enough to take
+     full-strength ink text, so meaning lives in the hue and legibility
+     never depends on it. Ink on every fill clears AA with room:
+       success 13.53:1, info 13.49:1, warning 14.52:1, danger 13.07:1
+
+     These four do a second job in this theme, and it is the reason the
+     launcher has any color at all: they are also the app-plate tints. A
+     home screen where every icon is one color reads as a wireframe rather
+     than a launcher, and the alternative to a second palette is to spend
+     the one the theme already ships. Five of the demo's ten plates take a
+     fill, each under full-strength ink glyphs, so the tint carries
+     recognition and never carries meaning. The exception is the single
+     accent plate, which is the one app that is a conversion; its glyph
+     flips to accent ink and is measured with the accent, not here.
+
+     Because these four are chrome here rather than badge paint alone, they
+     are load-bearing for a re-skin in a way a register theme's fills are
+     not.
+     CUSTOMIZE.md shows what happens to the home screen when a dark re-skin
+     forgets them.
+     ---------------------------------------------------------------------- */
+  --ph-fill-success: #c8e8c6;
+  --ph-fill-info: #cfe1f7;
+  --ph-fill-warning: #f8e7a6;
+  --ph-fill-danger: #f8d3d6;
+
+  /* ----------------------------------------------------------------------
+     BORDER
+     Aesthetic philosophy axis. Two weights of the same idea. The hairline
+     (1.60:1 on surface) is quiet and carries only tidiness: between list
+     rows it is the only divider, and losing it blurs the rows together
+     without costing any content. The strong border is the device edge, the
+     app plate outline and any control boundary that has to be findable on
+     its own: 4.27:1 on surface, 3.61:1 on ground and 3.13:1 on the stage,
+     clearing the 3:1 UI-component floor on every surface in the theme.
+     ---------------------------------------------------------------------- */
+  --ph-border-width: 1px;
+  --ph-border: #c6cdd8;         /* hairline, decorative separation */
+  --ph-border-strong: #737b88;  /* device edge, plates, control boundaries */
+
+  /* ----------------------------------------------------------------------
+     SHADOW
+     Sensory ambition axis. Soft and layered. Two jobs: an app plate sits a
+     millimetre off the wallpaper, and above the desktop breakpoint the
+     whole device sits on a table and casts the one real shadow in the
+     theme. The ink components (20, 23, 28) are --ph-ink; keep them in sync
+     if you change the ink.
+     ---------------------------------------------------------------------- */
+  --ph-shadow-sm: 0 1px 2px rgba(20, 23, 28, 0.1);
+  --ph-shadow-raised: 0 1px 2px rgba(20, 23, 28, 0.07),
+    0 4px 12px -2px rgba(20, 23, 28, 0.12);
+  --ph-shadow-device: 0 2px 6px rgba(20, 23, 28, 0.1),
+    0 24px 56px -12px rgba(20, 23, 28, 0.3);
+
+  /* ----------------------------------------------------------------------
+     RADIUS
+     Audience relationship axis. A phone is the roundest object in
+     computing and the radii are what make the shell recognisable at a
+     glance, so this group is larger than a register theme's. The icon
+     radius is the load-bearing one: below 12px the plates read as tiles,
+     above 20px they read as toys.
+     ---------------------------------------------------------------------- */
+  --ph-radius-tight: 4px;     /* badges, tags, keyboard hints */
+  --ph-radius: 10px;          /* buttons, inputs, cards */
+  --ph-radius-icon: 16px;     /* the app plate */
+  --ph-radius-sheet: 22px;    /* an app sheet's top corners */
+  --ph-radius-screen: 40px;   /* the screen's corners, desktop presentation */
+  --ph-radius-device: 50px;   /* the device's outer edge, desktop presentation */
+  --ph-radius-pill: 999px;
+
+  /* ----------------------------------------------------------------------
+     TYPE
+     Tone register axis. System fonts, no webfont, no network request. The
+     scale is sized for a 390px column rather than a landing page, which is
+     why the display size stops at 2.25rem: a 44px headline in a phone
+     sheet is two words a line. Mono is the voice for the status bar clock,
+     for version strings and for anything that has to line up in a column.
+     ---------------------------------------------------------------------- */
+  --ph-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --ph-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --ph-weight-body: 400;
+  --ph-weight-medium: 500;
+  --ph-weight-bold: 700;
+  --ph-weight-display: 750;
+
+  --ph-text-display: 2.25rem;  /* 36px */
+  --ph-text-h1: 1.75rem;       /* 28px */
+  --ph-text-h2: 1.375rem;      /* 22px */
+  --ph-text-h3: 1.125rem;      /* 18px */
+  --ph-text-lead: 1.0625rem;   /* 17px */
+  --ph-text-body: 1rem;        /* 16px, the floor for form inputs on iOS */
+  --ph-text-sm: 0.875rem;      /* 14px, the floor for any body content */
+
+  /* 12px, labels, badges, icon captions. Phone home screens caption their
+     icons at about 11px and this theme does not, which is the one place the
+     device fidelity loses on purpose: 11px captions under 60px plates are
+     the first thing to go for a reader who has increased their system text
+     size, and a launcher whose labels are unreadable is a launcher of
+     unlabelled squares. Twelve is the floor for anything that is a name. */
+  --ph-text-xs: 0.75rem;
+
+  --ph-leading-tight: 1.1;
+  --ph-leading-snug: 1.3;
+  --ph-leading-body: 1.6;
+
+  --ph-tracking-tight: -0.015em;
+  --ph-tracking-wide: 0.05em;
+
+  /* ----------------------------------------------------------------------
+     SPACE
+     Aesthetic philosophy axis. A fixed scale, and sheet padding comes off
+     it like everything else. The measure caps prose on an ordinary page;
+     inside a sheet the device width caps it first.
+     ---------------------------------------------------------------------- */
+  --ph-space-1: 4px;
+  --ph-space-2: 8px;
+  --ph-space-3: 12px;
+  --ph-space-4: 16px;
+  --ph-space-6: 24px;
+  --ph-space-8: 32px;
+  --ph-space-12: 48px;
+  --ph-space-16: 64px;
+
+  --ph-measure: 60ch;
+
+  /* ----------------------------------------------------------------------
+     MOTION
+     Sensory ambition axis. One idea: an app arrives from below, a short
+     rise and fade, and everything else is instant. A launcher could
+     animate every icon press, a page turn, a dock bounce; it animates one
+     thing, and the restraint is what keeps the metaphor from becoming a
+     demo reel. Under prefers-reduced-motion the block at the bottom of
+     this file zeroes the rise and collapses the duration, so a sheet
+     appears in place, complete.
+     ---------------------------------------------------------------------- */
+  --ph-duration: 180ms;
+  --ph-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ph-sheet-rise: 16px;   /* how far below its resting place a sheet starts */
+
+  /* ----------------------------------------------------------------------
+     FOCUS
+     Audience relationship axis. The ring is the accent, offset outside the
+     element, so a keyboard user can tell focus from structure at a glance.
+     Everything interactive in the shell shows it: app icons, dock icons,
+     the back control, the status bar button.
+       ring against ground 5.43:1, well past the 3:1 UI floor
+     ---------------------------------------------------------------------- */
+  --ph-ring: var(--ph-accent);
+  --ph-ring-width: 3px;
+  --ph-ring-offset: 2px;
+
+  /* ----------------------------------------------------------------------
+     SHELL GEOMETRY
+     The group a register theme would not have: the measurements of the
+     phone itself. shell/shell.css draws the launcher entirely from these,
+     so re-skinning the shell is still a one-file edit.
+
+     The device width is the native viewport this shell was designed at,
+     and above the desktop breakpoint it becomes the width of the presented
+     device. The app cell clears the 24px WCAG 2.5.8 target minimum several
+     times over; primary in-sheet buttons keep the 44px floor separately in
+     components.css.
+     ---------------------------------------------------------------------- */
+  --ph-device-width: 390px;    /* the native viewport, and the framed width */
+  --ph-device-height: 844px;   /* the framed height above the desktop break */
+  --ph-statusbar-height: 44px;
+  --ph-dock-height: 92px;
+  --ph-sheet-header: 52px;
+  --ph-app-plate: 60px;        /* the glyph plate on an app icon */
+  --ph-app-cell: 78px;         /* full icon including its caption */
+  --ph-app-gap: 18px;          /* gutter of the icon grid */
+  --ph-app-columns: 4;         /* the grid is four wide, as phones are */
+  --ph-bezel: 10px;            /* frame wall thickness, desktop presentation */
+  --ph-indicator-width: 128px; /* the home indicator bar */
+  --ph-indicator-height: 5px;
+
+  /* Layering. Chrome sits above the sheet, and the skip link above all of
+     it. There is no stack to manage: one app is open at a time. */
+  --ph-z-sheet: 20;
+  --ph-z-chrome: 30;
+  --ph-z-skip: 50;
+}
+
+/* Anyone who has asked the operating system to stop animating gets sheets
+   that appear in place, complete, instantly. The shell still works; it just
+   stops performing. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ph-duration: 1ms;
+    --ph-sheet-rise: 0px;
+  }
+}

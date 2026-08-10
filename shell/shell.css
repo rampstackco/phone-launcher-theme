@@ -1,0 +1,818 @@
+/* ==========================================================================
+   phone-launcher-theme / shell
+   --------------------------------------------------------------------------
+   The launcher: wallpaper, status bar, app grid, dock, and the app sheets a
+   site's pages open into. This file is the shell class's equivalent of a
+   register theme's play layer, except it is not a garnish; it is the
+   archetype. Delete it and shell.js and you still have a readable page built
+   from tokens.css and components.css, which is the JS-last contract this
+   class is built on.
+
+   HOW THE PROGRESSIVE ENHANCEMENT WORKS. The markup is an ordinary document:
+   a masthead, a nav of anchor links, article sections in reading order, a
+   footer nav. This file styles that document twice:
+
+     1. The base styles below assume no JavaScript. App sheets are stacked
+        cards in document order, the app nav is a visible grid of anchor
+        links, the dock is a nav that jumps to the pinned four, and there is
+        no status bar, because a status bar on a page that is not a phone is
+        chrome about nothing. The page scrolls like a page.
+
+     2. shell.js puts `ph-live` on the <html> element as its first act.
+        Every rule scoped under .ph-live upgrades the same markup into a
+        phone: the page stops scrolling, the screen fills the viewport, icons
+        open apps, and the pages become full-screen sheets. No markup is
+        duplicated; the document is the launcher.
+
+   THE TRANSFORM. Mobile is not the fallback here, it is the native state:
+   at 390 the launcher is the viewport, full bleed, exactly as designed.
+   Above 960px the metaphor does not stretch, it changes presentation: the
+   launcher becomes a device sitting on a stage, at its true width, and the
+   masthead steps out of the screen to the left where the desktop has room
+   for it. Same element, second costume. The reasoning for choosing this
+   over an expanded grid is in the PR that introduced this repo; the short
+   version is that a full-bleed four-to-eight column icon field at 1280 is
+   not a phone home screen, it is a desktop, and desktop-os-theme is already
+   that.
+
+   There is not one color literal in this file, and every value a re-skin
+   needs to reach is a var() reference to tokens.css. Twelve declarations
+   carry a bare length: the off-screen offset of the skip link, the 16px
+   glyph boxes, the 32px status button, the 48px dock plate, two 36px and
+   44px control minimums, and the masthead's clamp bounds. Those are
+   drawing and target-size numbers rather than register values, and the
+   negative-claim audit in this repo's pull request lists them rather than
+   letting the sentence above overstate itself.
+
+   Requires tokens.css. Load it, then components.css, then this, then the
+   script:
+
+     <link rel="stylesheet" href="tokens/tokens.css" />
+     <link rel="stylesheet" href="components/components.css" />
+     <link rel="stylesheet" href="shell/shell.css" />
+     <script src="shell/shell.js" defer></script>
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   GROUND AND THE WALLPAPER SYSTEM
+   The screen ground is a wallpaper slot, not a color. Two axes stay
+   independent: the register (tokens.css) says what colors exist, the
+   wallpaper (a data attribute on body) says how the ground composes them.
+   This is the mechanism the shell class's pilot established, cloned here
+   verbatim.
+
+   THE MECHANISM (class standard for shell themes):
+     body[data-wallpaper="quiet"]  the quiet field, also what you get with
+                                   no attribute at all, which is what the
+                                   plain document and prefers-contrast both
+                                   get
+     body[data-wallpaper="scene"]  reveals the inline SVG scene layer
+
+   shell.js only toggles the attribute; every visual belongs to these
+   attribute-scoped rules. The picker, like all behavior, exists only after
+   enhancement.
+
+   CONTRAST BY CONSTRUCTION. The wallpaper layer may paint ONLY with these
+   tokens: chrome, ground, scene, surface, surface-muted, border, and
+   fill-warning. The darkest of those is the border stroke, and full ink over
+   it measures 11.23:1, so the worst text-over-wallpaper pairing on the home
+   screen (app labels, full ink) clears AA more than twice over without a
+   scrim. Measured over every allowed paint: surface 17.96, chrome 16.59,
+   ground 15.17, fill-warning 14.52, surface-muted 14.48, scene 12.65,
+   border 11.23. The dock plate, the status bar and every sheet are opaque
+   surfaces with their own measured pairings, so the wallpaper cannot reach
+   them. The class guarantee, should a future variant want darker paint: a
+   token-driven scrim layer between wallpaper and content, with the ratios
+   re-measured through the scrim. No shipped variant needs one.
+   -------------------------------------------------------------------------- */
+.ph-home-ground {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--ph-ground);
+  background-image: var(--ph-wallpaper-quiet);
+  color: var(--ph-ink);
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-body);
+  line-height: var(--ph-leading-body);
+}
+
+/* The screen does not scroll; its sheets do. Only when live: without the
+   script the page is a page, and pages scroll. */
+.ph-live,
+.ph-live .ph-home-ground {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* --------------------------------------------------------------------------
+   STAGE AND DEVICE
+   Two elements that do almost nothing until the desktop breakpoint. In the
+   plain document and at phone widths the stage is a pass-through and the
+   device is the viewport; above 960px they become the table and the phone
+   standing on it. Keeping them in the markup at every width is what lets
+   the transform be a change of costume rather than a second layout.
+   -------------------------------------------------------------------------- */
+.ph-live .ph-device {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The wallpaper layer. The quiet field is a background image on this
+   element; the scene is an inline SVG child, hidden until the body
+   attribute asks for it. Inline rather than a background image because an
+   SVG loaded through a URL is an isolated document that cannot read custom
+   properties; inlined, the paint rules below hand it the tokens, which is
+   what makes a re-skin reach the wallpaper. */
+.ph-wallpaper {
+  display: none;
+}
+
+.ph-live .ph-wallpaper {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-image: var(--ph-wallpaper-quiet);
+}
+
+.ph-wallpaper > svg {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-wallpaper="scene"] .ph-wallpaper > svg {
+  display: block;
+}
+
+/* Wallpaper paint rules. Only the allowed tokens from the contrast contract
+   above. */
+.ph-wallpaper .ph-art-line {
+  stroke: var(--ph-border);
+  fill: none;
+}
+
+.ph-wallpaper .ph-art-plate {
+  fill: var(--ph-surface);
+  stroke: var(--ph-border);
+}
+
+.ph-wallpaper .ph-art-shade {
+  fill: var(--ph-surface-muted);
+  stroke: var(--ph-border);
+}
+
+.ph-wallpaper .ph-art-mark {
+  fill: var(--ph-fill-warning);
+  stroke: var(--ph-border);
+}
+
+/* Anyone who has asked for more contrast gets the quiet field regardless of
+   what the picker says. Placed after the scene rule so it wins on source
+   order at equal specificity. */
+@media (prefers-contrast: more) {
+  body[data-wallpaper] .ph-wallpaper > svg {
+    display: none;
+  }
+}
+
+/* Everything that is not the wallpaper sits above it. */
+.ph-live .ph-statusbar,
+.ph-live .ph-widget,
+.ph-live .ph-home,
+.ph-live .ph-dock {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   SKIP LINK
+   Above everything, including an open sheet.
+   -------------------------------------------------------------------------- */
+.ph-skip {
+  position: absolute;
+  left: -9999px;
+}
+
+.ph-skip:focus {
+  left: var(--ph-space-4);
+  top: var(--ph-space-4);
+  z-index: var(--ph-z-skip);
+  padding: var(--ph-space-3) var(--ph-space-4);
+  background: var(--ph-surface);
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-radius: var(--ph-radius);
+  box-shadow: var(--ph-shadow-raised);
+  font-weight: var(--ph-weight-bold);
+  color: var(--ph-ink);
+}
+
+/* --------------------------------------------------------------------------
+   STATUS BAR
+   Live only. A status bar is chrome about the device, and in a plain
+   document there is no device for it to be about, so it does not render at
+   all rather than rendering an empty strip.
+
+   It carries the clock and the wallpaper control, and nothing else. No
+   battery, no signal bars, no carrier name: this shell has no idea what
+   your battery is doing, and drawing a meter that reports nothing is the
+   same failure as shipping a button that does nothing.
+   -------------------------------------------------------------------------- */
+.ph-statusbar {
+  display: none;
+}
+
+.ph-live .ph-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ph-space-2);
+  flex: none;
+  height: var(--ph-statusbar-height);
+  padding: 0 var(--ph-space-4);
+  background: var(--ph-chrome);
+  border-bottom: var(--ph-border-width) solid var(--ph-border);
+}
+
+.ph-clock {
+  font-family: var(--ph-font-mono);
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-medium);
+  color: var(--ph-ink);
+}
+
+.ph-status-end {
+  display: flex;
+  align-items: center;
+  gap: var(--ph-space-1);
+}
+
+/* The status bar's one control, injected by shell.js. */
+.ph-status-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  color: var(--ph-ink);
+  background: transparent;
+  border: var(--ph-border-width) solid transparent;
+  border-radius: var(--ph-radius-tight);
+  cursor: pointer;
+}
+
+.ph-status-btn:hover {
+  background: var(--ph-surface-muted);
+  border-color: var(--ph-border);
+}
+
+.ph-status-btn:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: 0;
+}
+
+.ph-status-btn > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   THE MASTHEAD WIDGET
+   As a page it is an ordinary masthead. Live at phone widths it is the home
+   screen's one widget, the block of text a phone puts above the icons.
+   Above the desktop breakpoint it steps out of the screen entirely and
+   becomes a masthead again, beside the device. One element, three costumes,
+   no duplicated markup.
+   -------------------------------------------------------------------------- */
+.ph-widget {
+  max-width: var(--ph-measure);
+  margin: 0 auto;
+  padding: var(--ph-space-6) var(--ph-space-4) 0;
+}
+
+.ph-brand-name {
+  margin: 0;
+  font-size: var(--ph-text-h2);
+  font-weight: var(--ph-weight-display);
+  letter-spacing: var(--ph-tracking-tight);
+}
+
+.ph-brand-tagline {
+  margin: var(--ph-space-1) 0 0;
+  color: var(--ph-ink-muted);
+  max-width: var(--ph-measure);
+}
+
+.ph-live .ph-widget {
+  flex: none;
+  max-width: none;
+  padding: var(--ph-space-6) var(--ph-space-6) var(--ph-space-2);
+}
+
+.ph-live .ph-brand-tagline {
+  font-size: var(--ph-text-sm);
+  line-height: var(--ph-leading-snug);
+}
+
+/* --------------------------------------------------------------------------
+   APPS
+   A nav of anchor links. As a page: a wrapping grid under the masthead.
+   Live: the home screen's icon grid, four columns wide, which is what the
+   token says and what phones have settled on.
+   -------------------------------------------------------------------------- */
+.ph-apps {
+  max-width: var(--ph-measure);
+  margin: 0 auto;
+  padding: var(--ph-space-6) var(--ph-space-4);
+}
+
+/* As a page the icons are a wrapping row, because a plain document has no
+   screen width to divide into four. The grid is a live-only idea. */
+.ph-apps-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ph-space-2);
+}
+
+.ph-live .ph-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ph-app-columns), minmax(0, 1fr));
+  gap: var(--ph-app-gap) var(--ph-space-2);
+  justify-items: center;
+}
+
+.ph-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ph-space-2);
+  width: var(--ph-app-cell);
+  padding: var(--ph-space-1);
+
+  text-decoration: none;
+  text-align: center;
+  border-radius: var(--ph-radius);
+  border: var(--ph-border-width) solid transparent;
+}
+
+.ph-app:hover .ph-app-plate {
+  border-color: var(--ph-ink);
+}
+
+.ph-app:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: var(--ph-ring-offset);
+}
+
+/* The plate is the glyph's tile. Its tint comes from the semantic fill set
+   the theme already ships, never from a second palette, and a tinted plate
+   carries full ink on top of it, so the tint carries recognition and never
+   carries meaning. The accent plate below is the one exception, and it is
+   an exception on purpose. */
+.ph-app-plate {
+  display: grid;
+  place-items: center;
+  width: var(--ph-app-plate);
+  height: var(--ph-app-plate);
+  color: var(--ph-ink);
+  background: var(--ph-surface);
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-radius: var(--ph-radius-icon);
+  box-shadow: var(--ph-shadow-sm);
+}
+
+.ph-app-plate > svg {
+  width: 58%;
+  height: 58%;
+}
+
+.ph-plate-info {
+  background: var(--ph-fill-info);
+}
+
+.ph-plate-success {
+  background: var(--ph-fill-success);
+}
+
+.ph-plate-warning {
+  background: var(--ph-fill-warning);
+}
+
+.ph-plate-danger {
+  background: var(--ph-fill-danger);
+}
+
+.ph-plate-muted {
+  background: var(--ph-surface-muted);
+}
+
+/* The one accent-tinted plate on the home screen belongs to the one app
+   that is the site's actual conversion. Its glyph flips to accent ink. */
+.ph-plate-accent {
+  color: var(--ph-accent-ink);
+  background: var(--ph-accent);
+  border-color: var(--ph-accent);
+}
+
+.ph-app-label {
+  font-size: var(--ph-text-xs);
+  font-weight: var(--ph-weight-medium);
+  color: var(--ph-ink);
+  line-height: var(--ph-leading-snug);
+}
+
+.ph-live .ph-home {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ph-live .ph-apps {
+  max-width: none;
+  padding: var(--ph-space-4) var(--ph-space-6);
+}
+
+/* --------------------------------------------------------------------------
+   DOCK
+   The pinned four. As a page: a footer nav of anchor links. Live: a plate
+   fixed to the bottom of the screen. The dock holds apps that are not on
+   the grid, which is how phones actually work and which keeps every app in
+   this document reachable from exactly one place.
+
+   WHERE PHONE FIDELITY LOSES TO ACCESSIBILITY, AND WHY. Real docks drop the
+   labels. This one keeps them. Without a visible label the only accessible
+   name a dock item can carry is an aria-label or a visually hidden span,
+   which is a name for screen readers and nobody else; four unlabelled
+   glyphs are also the hardest four targets on the screen for anyone who
+   does not already know the icon set. The label is smaller here than on the
+   grid and the plate shrinks to make room for it, which is the whole cost.
+   -------------------------------------------------------------------------- */
+.ph-dock {
+  padding: var(--ph-space-4);
+  background: var(--ph-chrome);
+  border-top: var(--ph-border-width) solid var(--ph-border-strong);
+}
+
+.ph-dock-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--ph-space-2);
+  max-width: var(--ph-measure);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.ph-live .ph-dock {
+  flex: none;
+  height: var(--ph-dock-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--ph-space-3);
+}
+
+.ph-live .ph-dock-list {
+  flex: 1;
+  flex-wrap: nowrap;
+  gap: var(--ph-space-1);
+  max-width: none;
+}
+
+.ph-live .ph-dock .ph-app-plate {
+  width: 48px;
+  height: 48px;
+}
+
+/* --------------------------------------------------------------------------
+   APP SHEET, AS A PAGE
+   Without the script a sheet is a card: header strip, white body, strong
+   outline, stacked in reading order with the page scrolling past. The
+   [data-ph-controls] and [data-ph-home] slots stay empty; the back control
+   and the home bar are injected by shell.js, because a control that does
+   nothing must not exist.
+   -------------------------------------------------------------------------- */
+.ph-sheets {
+  padding: 0 var(--ph-space-4);
+}
+
+.ph-sheet {
+  max-width: var(--ph-measure);
+  margin: 0 auto var(--ph-space-8);
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--ph-surface);
+  border: var(--ph-border-width) solid var(--ph-border-strong);
+  border-radius: var(--ph-radius-sheet);
+  box-shadow: var(--ph-shadow-raised);
+  overflow: hidden; /* the header's square corners clip to the radius */
+}
+
+.ph-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ph-space-2);
+  min-height: var(--ph-sheet-header);
+  padding: 0 var(--ph-space-4);
+
+  background: var(--ph-chrome);
+  border-bottom: var(--ph-border-width) solid var(--ph-border);
+}
+
+.ph-sheet-title {
+  margin: 0;
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-bold);
+  letter-spacing: var(--ph-tracking-tight);
+}
+
+.ph-sheet-controls {
+  display: flex;
+  flex: none;
+}
+
+.ph-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ph-space-1);
+  min-height: 36px;
+  padding: 0 var(--ph-space-2) 0 var(--ph-space-1);
+
+  font-family: var(--ph-font-sans);
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-medium);
+  color: var(--ph-ink);
+  background: transparent;
+  border: var(--ph-border-width) solid transparent;
+  border-radius: var(--ph-radius-tight);
+  cursor: pointer;
+}
+
+.ph-back:hover {
+  background: var(--ph-surface-muted);
+  border-color: var(--ph-border);
+}
+
+.ph-back:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: 0;
+}
+
+.ph-back > svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ph-sheet-body {
+  padding: var(--ph-space-6) var(--ph-space-4);
+  overflow-wrap: break-word;
+}
+
+.ph-sheet-body > :first-child {
+  margin-top: 0;
+}
+
+/* The home bar. Hidden in the plain document, because going home means
+   nothing on a page that never left. */
+.ph-sheet-foot {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   APP SHEET, LIVE
+   The same article, full screen. Closed sheets are display:none, which also
+   removes them from the tab order; no aria-hidden bookkeeping is needed.
+   One app is open at a time, which is what a phone does and why this shell
+   has no window stack to manage.
+   -------------------------------------------------------------------------- */
+.ph-live .ph-sheet {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--ph-statusbar-height);
+  bottom: 0;
+  max-width: none;
+  margin: 0;
+  z-index: var(--ph-z-sheet);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ph-live .ph-sheet.ph-open {
+  display: flex;
+  animation: ph-sheet-in var(--ph-duration) var(--ph-ease);
+}
+
+.ph-live .ph-sheet:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: calc(-1 * var(--ph-ring-width));
+}
+
+/* The body is the scroll region. shell.js gives it tabindex="0" so a
+   keyboard user can scroll a long sheet without a pointer. */
+.ph-live .ph-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* The home bar: a real control, injected live, sitting where a thumb
+   already is. The top-left back control is the convention; on an 844px
+   screen it is also the hardest place on the device to reach, so leaving
+   an app does not depend on getting there. */
+.ph-live .ph-sheet-foot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--ph-chrome);
+  border-top: var(--ph-border-width) solid var(--ph-border);
+}
+
+.ph-home-btn {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: var(--ph-border-width) solid transparent;
+  border-radius: var(--ph-radius-tight);
+  cursor: pointer;
+}
+
+.ph-home-btn:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: calc(-1 * var(--ph-ring-width));
+}
+
+.ph-home-bar {
+  display: block;
+  width: var(--ph-indicator-width);
+  height: var(--ph-indicator-height);
+  background: var(--ph-ink);
+  border-radius: var(--ph-radius-pill);
+}
+
+.ph-home-btn:hover .ph-home-bar {
+  background: var(--ph-accent);
+}
+
+/* When an app is open the home screen is gone, not merely covered: the
+   icons behind an opaque sheet would otherwise stay in the tab order and a
+   keyboard user would be walking through a screen nobody can see. */
+.ph-live .ph-device.ph-app-open .ph-home,
+.ph-live .ph-device.ph-app-open .ph-widget,
+.ph-live .ph-device.ph-app-open .ph-dock {
+  display: none;
+}
+
+@keyframes ph-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--ph-sheet-rise));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   THE PRESENTED DEVICE
+   Once the viewport is wider than a phone and tall enough to hold one, the
+   launcher stops filling it and becomes a device on a stage. Nothing about
+   the screen changes: the same 390px column, the same four-column grid, the
+   same sheets. What changes is that a wide viewport is asked to present the
+   artifact rather than to wear it, because a home screen stretched to 768
+   or 1280 is a desktop with icons, and this collection already has one of
+   those.
+
+   The height condition matters as much as the width one. A landscape phone
+   is wide and short; framing a 390x844 device inside it would produce a
+   squashed prop, so a short viewport keeps the native full-bleed state.
+   -------------------------------------------------------------------------- */
+@media (min-width: 560px) and (min-height: 620px) {
+  .ph-live .ph-home-ground {
+    background-color: var(--ph-stage);
+    background-image: none;
+  }
+
+  .ph-live .ph-stage {
+    display: grid;
+    place-items: center;
+    height: 100dvh;
+    padding: var(--ph-space-8);
+  }
+
+  /* The device body. It declines to cosplay a particular handset: no notch,
+     no camera, no brand. It is a bezel, a screen and a shadow, all drawn
+     from tokens. */
+  .ph-live .ph-device {
+    position: relative;
+    inset: auto;
+
+    /* border-box and the explicit bezel arithmetic together are what keep
+       the SCREEN at the native 390, whether or not the page that consumes
+       this shell ships a box-sizing reset. Sized the other way, a reset
+       silently subtracts the bezel from the screen and the desktop
+       presentation stops being the phone it claims to present. */
+    box-sizing: border-box;
+    width: calc(var(--ph-device-width) + 2 * var(--ph-bezel));
+    height: min(
+      calc(var(--ph-device-height) + 2 * var(--ph-bezel)),
+      calc(100dvh - 2 * var(--ph-space-8))
+    );
+    padding: var(--ph-bezel);
+    background: var(--ph-ink);
+    border-radius: var(--ph-radius-device);
+    box-shadow: var(--ph-shadow-device);
+  }
+
+  /* No clipping container: each element that touches a screen corner
+     carries the screen radius itself, which is what lets the masthead
+     position outside the device without being cut off. */
+  .ph-live .ph-wallpaper {
+    inset: var(--ph-bezel);
+    border-radius: var(--ph-radius-screen);
+  }
+
+  .ph-live .ph-statusbar {
+    border-top-left-radius: var(--ph-radius-screen);
+    border-top-right-radius: var(--ph-radius-screen);
+  }
+
+  .ph-live .ph-dock,
+  .ph-live .ph-sheet-foot {
+    border-bottom-left-radius: var(--ph-radius-screen);
+    border-bottom-right-radius: var(--ph-radius-screen);
+  }
+
+  .ph-live .ph-sheet {
+    left: var(--ph-bezel);
+    right: var(--ph-bezel);
+    bottom: var(--ph-bezel);
+    top: calc(var(--ph-bezel) + var(--ph-statusbar-height));
+  }
+
+}
+
+/* --------------------------------------------------------------------------
+   THE MASTHEAD STEPS OUT
+   The second half of the transform, and it waits for room rather than
+   arriving with the frame: below this width the stage is not wide enough to
+   hold a column of text beside the device without crowding it, so the
+   masthead stays where it was, as the home screen's widget.
+
+   Above it, the same element becomes the page's masthead again, out on the
+   stage. It keeps its place in the document; only its costume changes. It
+   also stays visible while an app is open, because out here it belongs to
+   the page rather than to the phone.
+   -------------------------------------------------------------------------- */
+@media (min-width: 960px) and (min-height: 620px) {
+  .ph-live .ph-widget {
+    position: absolute;
+    top: var(--ph-space-16);
+    right: calc(100% + var(--ph-space-8));
+    width: clamp(
+      180px,
+      calc(
+        (100vw - var(--ph-device-width) - 2 * var(--ph-bezel)) / 2 -
+          var(--ph-space-12)
+      ),
+      340px
+    );
+    padding: 0;
+    text-align: right;
+    z-index: 1;
+  }
+
+  .ph-live .ph-device.ph-app-open .ph-widget {
+    display: block;
+  }
+
+  .ph-live .ph-brand-name {
+    font-size: var(--ph-text-display);
+    line-height: var(--ph-leading-tight);
+  }
+
+  .ph-live .ph-brand-tagline {
+    margin-top: var(--ph-space-3);
+    font-size: var(--ph-text-body);
+    line-height: var(--ph-leading-body);
+  }
+}
