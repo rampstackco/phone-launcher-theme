@@ -70,6 +70,8 @@ So flipping the ink to cream while leaving the fills pale does not produce a few
 
 Cream ink on the shipped pale fills measures **1.12:1** on success and info, **1.04:1** on warning and **1.16:1** on danger. Nothing in the browser will warn you; the plates still render, and at a glance the screen looks like a dark theme that happens to be a bit washed out in places. It is worth knowing that the wallpaper's warning-filled card gives the same tell, which is the cheapest way to spot the mistake in a screenshot.
 
+Look at the All pages index in that same capture, though, because it is the argument for having one. It spends no semantic fill: plain ink on the ground, which the twelve-token stop already moved. So the surface that had holes punched in it is the icon grid, and the text list next to it is still perfectly legible and still reaches all ten pages. The guarantee layer was put there for the reader who does not recognise an icon rail as navigation ([class decision 44](https://github.com/rampstackco/desktop-os-theme/blob/main/docs/class-decisions.md)); it turns out to cover the reader whose icon rail was broken by a careless re-skin as well. That is the shape of the general rule: the fewer tokens a navigation surface consumes, the more re-skins it survives.
+
 The general rule for any shell: work out which tokens your chrome consumes before you re-skin, not after. A shell spends tokens in places a register theme never does.
 
 ### Two more things to check after any dark re-skin
