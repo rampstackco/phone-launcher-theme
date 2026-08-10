@@ -443,6 +443,95 @@ body[data-wallpaper="scene"] .ph-wallpaper > svg {
 }
 
 /* --------------------------------------------------------------------------
+   ALL PAGES
+   The one navigation surface here that is not a picture. The grid and the
+   dock are the metaphor and they are both icon surfaces; an icon with a
+   label under it is still an icon, and a reader who does not read a screen
+   of glyphs as navigation has, without this, no way through the site at
+   all. Class decision 44 in desktop-os-theme's docs/class-decisions.md is
+   the rule and the argument. It is the same with the script and without it,
+   because it is nothing but anchors in a list.
+
+   WHERE IT SITS. Below the grid, inside the scrolling home screen, which is
+   where a phone keeps the full list of what is installed. When an app is
+   open the home screen is display:none along with the grid and the dock, so
+   the index goes with the surface it belongs to; the way back is the home
+   bar.
+
+   WHY IT IS A WRAPPING ROW AND NOT A SETTINGS LIST. The first build of this
+   was components.css's own list component, ten full-width rows, which is
+   the most phone-native shape available and is what the register would
+   reach for anywhere else. The render killed it. Ten rows of white plate
+   are 500 pixels of a 564-pixel screen: they cover the wallpaper entirely,
+   they push the icon grid into a third of the frame, and the README's hero
+   stops being a picture of a home screen and becomes a picture of a link
+   list. This repo's own argument is that a shell nobody searches for
+   travels as a screenshot, so the first frame has to be legible; a
+   guarantee layer that eats the first frame has traded the whole thesis for
+   a checkbox. Wrapping text, no plate, no rules, is four lines instead of
+   ten rows, and the ground stays on screen behind it.
+   -------------------------------------------------------------------------- */
+.ph-index {
+  max-width: var(--ph-measure);
+  margin: 0 auto;
+  padding: 0 var(--ph-space-4) var(--ph-space-6);
+}
+
+.ph-live .ph-index {
+  max-width: none;
+  padding: 0 var(--ph-space-6) var(--ph-space-6);
+}
+
+.ph-index-title {
+  margin: 0 0 var(--ph-space-2);
+  padding: 0 var(--ph-space-2);
+  font-size: var(--ph-text-xs);
+  font-weight: var(--ph-weight-medium);
+  letter-spacing: var(--ph-tracking-wide);
+  text-transform: uppercase;
+  color: var(--ph-ink-muted);
+}
+
+.ph-index-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ph-space-1) var(--ph-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Full ink, not muted. On the ground it measures 15.17:1 and on the hover
+   fill 14.48:1; muted ink would have been 5.71:1, which passes AA and still
+   reads as a row of things that are switched off, which is the wrong thing
+   for the one surface here that has to look like navigation.
+
+   min-height is the target floor, and it stays a literal for the reason the
+   rest of this file's floors do: a token invites a re-skin to lower it. */
+.ph-index-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--ph-space-1) var(--ph-space-2);
+
+  font-size: var(--ph-text-sm);
+  font-weight: var(--ph-weight-medium);
+  color: var(--ph-ink);
+  text-decoration: none;
+
+  border-radius: var(--ph-radius-tight);
+}
+
+.ph-index-item:hover {
+  background: var(--ph-surface-muted);
+}
+
+.ph-index-item:focus-visible {
+  outline: var(--ph-ring-width) solid var(--ph-ring);
+  outline-offset: var(--ph-ring-offset);
+}
+
+/* --------------------------------------------------------------------------
    DOCK
    The pinned four. As a page: a footer nav of anchor links. Live: a plate
    fixed to the bottom of the screen. The dock holds apps that are not on

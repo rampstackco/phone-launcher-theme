@@ -24,7 +24,7 @@
      committed PNGs are those hashes (recorded in the PR that introduced
      them). -->
 
-A phone home screen as a website: an app grid with labels, a dock, a status bar with a real clock, a wallpaper system under all of it, and your pages opening as full-screen app sheets you can leave with one key. This is a **shell** archetype rather than a visual register. The register a shell wears is swappable; what this repo actually packages is the launcher.
+A phone home screen as a website: an app grid with labels, a plain text index of every page under it, a dock, a status bar with a real clock, a wallpaper system under all of it, and your pages opening as full-screen app sheets you can leave with one key. This is a **shell** archetype rather than a visual register. The register a shell wears is swappable; what this repo actually packages is the launcher.
 
 The desktop sibling in this collection has a defining commercial exemplar to point at. This one does not. The phone-as-website idea lives in personal portfolio sites and in app landing pages that show a device, and the phrases people would use to search for it carry almost no measurable volume, which tells you what kind of thing it is: a shell that travels as a screenshot rather than as a search result. That shaped the build. The first frame has to be legible.
 
@@ -113,7 +113,7 @@ module.exports = {
 
 ## No JavaScript, no problem
 
-The demo is a plain document that a script upgrades, not an app with a fallback. With JavaScript disabled it reads top to bottom: a masthead, the app icons as a row of anchor links, every app as a titled card in reading order, the dock as a footer nav that jumps to the pinned four. This is verified by loading the page with scripts off, not assumed. The mechanism is one class: `shell.js` puts `ph-live` on the root element as its first act, and every launcher behavior in `shell.css` is scoped under it.
+The demo is a plain document that a script upgrades, not an app with a fallback. With JavaScript disabled it reads top to bottom: a masthead, the app icons as a row of anchor links, the All pages index under them unchanged, every app as a titled card in reading order, the dock as a footer nav that jumps to the pinned four. This is verified by loading the page with scripts off, not assumed. The mechanism is one class: `shell.js` puts `ph-live` on the root element as its first act, and every launcher behavior in `shell.css` is scoped under it.
 
 Two things are missing from that document on purpose. The back control and the home bar do not exist in the markup at all; the script injects them, because a control that does nothing must not exist. And the status bar does not render, because a status bar on a page that is not a phone is chrome about nothing.
 
@@ -123,7 +123,8 @@ Two things are missing from that document on purpose. The back control and the h
 
 A fake phone that strands a keyboard user is a failed build, so the keyboard model is the part of this theme that got the most engineering:
 
-- Every app icon, dock icon and injected control is keyboard-reachable with a visible focus ring drawn from the accent.
+- **The icons are not the only way through.** Under the grid, All pages: ten plain text links in alphabetical order, one per app, complete and identical whether or not the script runs. The grid and the dock are both icon surfaces, and an icon with a label under it is still an icon; a reader who does not read a screen of glyphs as navigation needs ordinary links rather than a better-drawn glyph. This is [WCAG 2.4.5 Multiple Ways](https://www.w3.org/WAI/WCAG22/Understanding/multiple-ways) on purpose rather than by luck, and it is class decision 44. Alphabetical rather than the grid's order, because a second surface that lists the same things in the same sequence is a copy of the first rather than another way in.
+- Every app icon, dock icon, index link and injected control is keyboard-reachable with a visible focus ring drawn from the accent.
 - The full Tab cycle was walked and recorded at both viewports, on the home screen and inside an open app. No focus trap anywhere; the cycle wraps.
 - <kbd>Escape</kbd> closes the open app. One key, one rule, and unlike a window pile there is only ever one thing it could mean.
 - Closing an app returns focus to the icon that opened it, verified at 390 and at 1280.
