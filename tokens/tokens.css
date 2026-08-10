@@ -41,6 +41,18 @@
   --ph-stage: #d8dde5;     /* the surface the device sits on, desktop only */
   --ph-scene: #d3d9e2;     /* wallpaper line art, 1.20:1 on ground, decorative */
 
+  /* The quiet wallpaper: light from the top of the screen, settling toward
+     the scene tone at the bottom edge. It is a value, so it lives here with
+     the other values, and it is declared once because two rules need it: the
+     plain document's page ground, and the screen's wallpaper layer once the
+     shell is live. Both are in shell.css. */
+  --ph-wallpaper-quiet: radial-gradient(
+    120% 68% at 50% 0%,
+    var(--ph-chrome) 0%,
+    var(--ph-ground) 52%,
+    var(--ph-scene) 100%
+  );
+
   /* ----------------------------------------------------------------------
      SURFACES
      Aesthetic philosophy axis. An app sheet is white so its content sits a

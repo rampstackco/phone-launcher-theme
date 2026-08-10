@@ -87,12 +87,17 @@
    nothing. Both shapes were compiled on 4.3.3 to confirm it, and the bracket
    pair splits the same way on v3 3.4.17. Take the hinted forms and no others.
 
-   TWO GROUPS ARE DELIBERATELY UNMAPPED, for opposite reasons.
+   THREE GROUPS ARE DELIBERATELY UNMAPPED, for different reasons.
 
    The --ph-z-* layering tokens have no namespace to live in (z-index
    utilities are static in v4), so consume them as arbitrary values:
 
      z-[var(--ph-z-chrome)]
+
+   --ph-wallpaper-quiet is a gradient, and bg-* is a color namespace with no
+   room for one, so it is an arbitrary value too:
+
+     bg-[image:var(--ph-wallpaper-quiet)]
 
    --ph-app-columns is the more interesting one, because the obvious home for
    it is a trap that does NOT fail silently. Filing a probe entry as

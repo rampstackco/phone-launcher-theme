@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pawl | phone-launcher-theme demo</title>
+    <meta
+      name="description"
+      content="A fictional personal tracker whose site is its own phone home screen, built entirely from the phone-launcher-theme tokens, components and shell. No build step, no framework, no dependencies."
+    />
+
+    <!-- The real token file, the real components, the real shell. This page
+         holds no copy of any of them, and declares no color of its own.
+         Change a value in tokens/tokens.css and this page changes with it.
+
+         The script is the whole shell. Remove the line and this page is
+         still a complete, readable site in document order, which is the
+         JS-last contract the shell class is built on. -->
+    <link rel="stylesheet" href="../tokens/tokens.css" />
+    <link rel="stylesheet" href="../components/components.css" />
+    <link rel="stylesheet" href="../shell/shell.css" />
+    <script src="../shell/shell.js" defer></script>
+
+    <style>
+      /* Layout for this page's sheet CONTENT only. The shell owns the
+         chrome. Tokens throughout, not one literal. */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .app-heading {
+        margin: 0 0 var(--ph-space-3);
+        font-size: var(--ph-text-h1);
+        font-weight: var(--ph-weight-display);
+        line-height: var(--ph-leading-tight);
+        letter-spacing: var(--ph-tracking-tight);
+        text-wrap: balance;
+      }
+
+      .app-sub {
+        margin: var(--ph-space-6) 0 var(--ph-space-3);
+        font-size: var(--ph-text-h3);
+        font-weight: var(--ph-weight-bold);
+        letter-spacing: var(--ph-tracking-tight);
+      }
+
+      .lead {
+        max-width: var(--ph-measure);
+        margin: 0 0 var(--ph-space-4);
+        font-size: var(--ph-text-lead);
+        color: var(--ph-ink-muted);
+      }
+
+      p {
+        max-width: var(--ph-measure);
+      }
+
+      .eyebrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--ph-space-2);
+        margin: 0 0 var(--ph-space-4);
+      }
+
+      .stack {
+        display: grid;
+        gap: var(--ph-space-4);
+        margin: var(--ph-space-6) 0 0;
+      }
+
+      .cta-row {
+        display: grid;
+        gap: var(--ph-space-3);
+        margin: var(--ph-space-6) 0 0;
+      }
+
+      .fine {
+        margin: var(--ph-space-4) 0 0;
+        font-size: var(--ph-text-sm);
+        color: var(--ph-ink-muted);
+      }
+
+      .price {
+        font-family: var(--ph-font-mono);
+        font-size: var(--ph-text-h2);
+        font-weight: var(--ph-weight-bold);
+        margin: 0;
+      }
+
+      .price small {
+        font-size: var(--ph-text-sm);
+        font-weight: var(--ph-weight-body);
+        color: var(--ph-ink-muted);
+      }
+
+      pre {
+        overflow-x: auto;
+        margin: var(--ph-space-4) 0;
+        padding: var(--ph-space-4);
+        background: var(--ph-surface-muted);
+        border: var(--ph-border-width) solid var(--ph-border);
+        border-radius: var(--ph-radius);
+      }
+
+      code {
+        font-family: var(--ph-font-mono);
+        font-size: var(--ph-text-sm);
+        line-height: var(--ph-leading-body);
+      }
+
+      .signup {
+        display: grid;
+        gap: var(--ph-space-4);
+        margin: var(--ph-space-6) 0 0;
+      }
+    </style>
+  </head>
+
+  <body class="ph-home-ground">
+    <div class="ph-stage">
+      <div class="ph-device">
+        <!-- The wallpaper scene: Pawl's own mechanism, drawn from scratch
+             as line art. A ratchet wheel with the pawl resting in a tooth,
+             the spring that holds it there, a column of tally marks, a
+             notched rule, and a labelled card. Inline so the paint rules in
+             shell.css can hand it the tokens; aria-hidden because it is
+             texture; visibility controlled by data-wallpaper on the body,
+             which only shell.js sets. -->
+        <div class="ph-wallpaper" aria-hidden="true">
+          <svg
+            viewBox="0 0 390 844"
+            preserveAspectRatio="xMidYMid slice"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- The scene sits in the band between the icon grid and the
+                 dock. Nothing is drawn behind the masthead or the icons,
+                 which is the difference between a wallpaper and a mess.
+
+                 The ratchet wheel: twenty teeth that climb one way and drop
+                 straight back, which is the whole product in one shape. -->
+            <g class="ph-art-line" stroke-width="2.5" stroke-linejoin="round">
+              <path
+                d="M250 512L274.1 505.8L271 515.3L295.8 516.9L290 525L313.1 534.2L305 540L324.2 555.9L314.7 559L328 580L318 580L324.2 604.1L314.7 601L313.1 625.8L305 620L295.8 643.1L290 635L274.1 654.2L271 644.7L250 658L250 648L225.9 654.2L229 644.7L204.2 643.1L210 635L186.9 625.8L195 620L175.8 604.1L185.3 601L172 580L182 580L175.8 555.9L185.3 559L186.9 534.2L195 540L204.2 516.9L210 525L225.9 505.8L229 515.3L250 502L250 512Z"
+              />
+              <circle cx="250" cy="580" r="18" />
+              <path
+                d="M250 562L250 520M265.6 589L302 610M234.4 589L198 610"
+                stroke-width="2"
+              />
+            </g>
+
+            <!-- the pawl itself, dropped onto the rim from its pivot, tip
+                 seated in a tooth -->
+            <path
+              class="ph-art-shade"
+              d="M133 490L150 484L196 534L186 549L138 508Z"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+            <circle
+              class="ph-art-plate"
+              cx="140"
+              cy="497"
+              r="9"
+              stroke-width="2.5"
+            />
+
+            <!-- days counted the oldest way there is -->
+            <g class="ph-art-line" stroke-width="3" stroke-linecap="round">
+              <path d="M44 470v34M55 470v34M66 470v34M77 470v34M39 502l43-38" />
+              <path d="M44 540v34M55 540v34M66 540v34" />
+            </g>
+
+            <!-- a notched rule down the right edge -->
+            <g transform="rotate(3 358 570)">
+              <rect
+                class="ph-art-shade"
+                x="344"
+                y="464"
+                width="30"
+                height="212"
+                rx="5"
+                stroke-width="2.5"
+              />
+              <g class="ph-art-line" stroke-width="2.5" stroke-linecap="round">
+                <path
+                  d="M344 492h18M344 518h10M344 544h10M344 570h18M344 596h10M344 622h10M344 648h18"
+                />
+              </g>
+            </g>
+
+            <!-- a labelled card, because a mechanism nobody wrote on is a
+                 mechanism nobody used -->
+            <g transform="rotate(-4 102 700)">
+              <rect
+                class="ph-art-mark"
+                x="44"
+                y="660"
+                width="116"
+                height="80"
+                rx="6"
+                stroke-width="2.5"
+              />
+              <path
+                class="ph-art-line"
+                d="M64 690h76M64 712h48"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </g>
+          </svg>
+        </div>
+
+        <a class="ph-skip" href="#main">Skip to content</a>
+
+        <div class="ph-statusbar">
+          <span class="ph-clock" data-ph-clock></span>
+          <span class="ph-status-end" data-ph-tray></span>
+        </div>
+
+        <!-- The masthead. On the phone it is the home screen's one widget;
+             above 960px the same element steps out beside the device and
+             becomes an ordinary masthead again. -->
+        <header class="ph-widget">
+          <h1 class="ph-brand-name">Pawl</h1>
+          <p class="ph-brand-tagline">
+            A tracker for the two or three things you are trying to keep
+            doing. This page is the product's site, arranged as its own home
+            screen; with JavaScript off it reads top to bottom like any
+            other page.
+          </p>
+        </header>
+
+        <div class="ph-home">
+          <!-- The apps. Plain anchor links to the sheets below; shell.js
+               turns them into openers. Each glyph is an original inline SVG
+               painted with currentColor so it reads the tokens. -->
+          <nav class="ph-apps" aria-label="Apps">
+            <ul class="ph-apps-grid">
+              <li>
+                <a class="ph-app" href="#app-readme">
+                  <span class="ph-app-plate ph-plate-info" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 3h9l4 4v14H6z" />
+                      <path d="M15 3v4h4" />
+                      <path d="M9 11h6M9 14.5h6M9 18h3.5" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">Read me</span>
+                </a>
+              </li>
+              <li>
+                <a class="ph-app" href="#app-about">
+                  <span class="ph-app-plate" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="8.5" />
+                      <path d="M12 11v5" />
+                      <path d="M12 7.5v.01" stroke-width="2.5" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">About</span>
+                </a>
+              </li>
+              <li>
+                <a class="ph-app" href="#app-how">
+                  <span class="ph-app-plate ph-plate-success" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="13" r="6.5" />
+                      <path d="M12 13V9" />
+                      <path d="M18.5 7L21 5" />
+                      <path d="M5.5 7L3 5" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">How it works</span>
+                </a>
+              </li>
+              <li>
+                <a class="ph-app" href="#app-streaks">
+                  <span class="ph-app-plate ph-plate-warning" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                      <path d="M5 6v12M9 6v12M13 6v12M17 6v12" />
+                      <path d="M3.5 17L19 7" stroke-width="2" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">Streaks</span>
+                </a>
+              </li>
+              <li>
+                <a class="ph-app" href="#app-changelog">
+                  <span class="ph-app-plate ph-plate-muted" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 4v16" />
+                      <circle cx="12" cy="9" r="2.5" />
+                      <circle cx="12" cy="16" r="2.5" />
+                      <path d="M6 9h3.5M14.5 9H18M6 16h3.5M14.5 16H18" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">Changelog</span>
+                </a>
+              </li>
+              <li>
+                <a class="ph-app" href="#app-privacy">
+                  <span class="ph-app-plate" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+                      <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+                    </svg>
+                  </span>
+                  <span class="ph-app-label">Privacy</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <main id="main" class="ph-sheets">
+          <!-- ================= READ ME ================= -->
+          <article class="ph-sheet" id="app-readme" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Read me</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <p class="eyebrow">
+                <span class="ph-badge ph-badge-info">v1.4</span>
+                <span class="ph-badge ph-badge-neutral">iOS and Android</span>
+              </p>
+
+              <h3 class="app-heading">Forward only.</h3>
+              <p class="lead">
+                A pawl is the small arm that sits in a ratchet's teeth and
+                stops the wheel turning back. Pawl tracks the two or three
+                things you are trying to keep doing, and it is built so the
+                count only ever goes one way.
+              </p>
+              <p>
+                Open it, tap the thing you did, put the phone down. That is
+                the whole interaction, and the rest of this site is here
+                because you asked a question about it.
+              </p>
+
+              <ul class="ph-list stack">
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Open an app</span>
+                  <span class="ph-list-end">tap an icon</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Leave one</span>
+                  <span class="ph-list-end"><kbd class="ph-kbd">Esc</kbd></span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Or the bar at the bottom</span>
+                  <span class="ph-list-end">tap it</span>
+                </li>
+              </ul>
+
+              <div class="cta-row">
+                <a class="ph-btn ph-btn-primary ph-btn-block" href="#app-how">How it works</a>
+                <a class="ph-btn ph-btn-default ph-btn-block" href="#app-pricing">Pricing</a>
+              </div>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= ABOUT ================= -->
+          <article class="ph-sheet" id="app-about" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">About</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">Two people and a wheel.</h3>
+              <p class="lead">
+                We built this for ourselves in 2024 and put it on the store
+                when a third person asked for a copy.
+              </p>
+              <p>
+                Most habit apps grow into life-management platforms with
+                dashboards, streak insurance and a paid tier for graphs. We
+                went the other way. Pawl holds a small number of things and
+                counts them, and every feature request that would add a
+                second screen has been turned down so far.
+              </p>
+              <p>
+                The name is the part that stops a ratchet slipping. It is a
+                small piece of metal that does one job, which is what we are
+                aiming at.
+              </p>
+
+              <div class="cta-row">
+                <a class="ph-btn ph-btn-default ph-btn-block" href="#app-start">Get the app</a>
+              </div>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= HOW IT WORKS ================= -->
+          <article class="ph-sheet" id="app-how" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">How it works</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">Three parts. That is the product.</h3>
+              <p class="lead">
+                Each one does its job and stops. Nothing here has a roadmap
+                to become a platform.
+              </p>
+
+              <div class="stack">
+                <div class="ph-panel">
+                  <h4 class="ph-panel-title">The wheel</h4>
+                  <p class="ph-panel-body">
+                    Up to five things you are keeping up. Five is the cap and
+                    it is not configurable, because the sixth thing is how
+                    people stop using trackers.
+                  </p>
+                </div>
+                <div class="ph-panel">
+                  <h4 class="ph-panel-title">The tooth</h4>
+                  <p class="ph-panel-body">
+                    One tap marks today. Miss a day and the count pauses
+                    where it is; it does not reset, and nothing sends you a
+                    guilt notification about it.
+                  </p>
+                </div>
+                <div class="ph-panel">
+                  <h4 class="ph-panel-title">The rule</h4>
+                  <p class="ph-panel-body">
+                    On the first of the month the last month collapses into a
+                    single line of numbers. That line is the only history the
+                    app keeps, and it fits on one screen.
+                  </p>
+                </div>
+              </div>
+
+              <div class="cta-row">
+                <a class="ph-btn ph-btn-primary ph-btn-block" href="#app-start">Get the app</a>
+                <a class="ph-btn ph-btn-ghost ph-btn-block" href="#app-manual">Read the manual</a>
+              </div>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= STREAKS ================= -->
+          <article class="ph-sheet" id="app-streaks" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Streaks</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">The count, and what it refuses to do.</h3>
+              <p class="lead">
+                A streak is a number of days. It is not a score, a level, or
+                a thing you can buy back.
+              </p>
+
+              <ul class="ph-list stack">
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Pauses on a missed day</span>
+                    <span class="ph-list-desc">The number holds instead of dropping to zero</span>
+                  </span>
+                  <span class="ph-list-end">yes</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Freeze tokens to buy</span>
+                    <span class="ph-list-desc">The mechanic that turns a habit into a currency</span>
+                  </span>
+                  <span class="ph-list-end">no</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Leaderboards</span>
+                    <span class="ph-list-desc">Your flossing is nobody's competition</span>
+                  </span>
+                  <span class="ph-list-end">no</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Backdating</span>
+                    <span class="ph-list-desc">One day back, once, for the day you forgot the phone</span>
+                  </span>
+                  <span class="ph-list-end">1 day</span>
+                </li>
+              </ul>
+
+              <p class="fine">
+                The one-day allowance is the most argued-about line in the
+                app. It stays because forgetting to record something is not
+                the same as not doing it.
+              </p>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= CHANGELOG ================= -->
+          <article class="ph-sheet" id="app-changelog" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Changelog</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">What changed.</h3>
+              <p class="lead">Short, because not much does.</p>
+
+              <ul class="ph-list stack">
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Month line</span>
+                    <span class="ph-list-desc">The monthly collapse, and the export that comes with it</span>
+                  </span>
+                  <span class="ph-list-end">1.4</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Backdating, one day</span>
+                    <span class="ph-list-desc">After eighteen months of asking</span>
+                  </span>
+                  <span class="ph-list-end">1.3</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Larger tap target</span>
+                    <span class="ph-list-desc">The whole row, not the circle at the end of it</span>
+                  </span>
+                  <span class="ph-list-end">1.2</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">First release</span>
+                    <span class="ph-list-desc">Five things, one tap, no account</span>
+                  </span>
+                  <span class="ph-list-end">1.0</span>
+                </li>
+              </ul>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= PRIVACY ================= -->
+          <article class="ph-sheet" id="app-privacy" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Privacy</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">It stays on the phone.</h3>
+              <p class="lead">
+                There is no account, so there is no server holding a list of
+                what you are trying to do about your health.
+              </p>
+
+              <ul class="ph-list stack">
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Account required</span>
+                  <span class="ph-list-end">no</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Analytics SDK</span>
+                  <span class="ph-list-end">none</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Sync</span>
+                  <span class="ph-list-end">your iCloud</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Export</span>
+                  <span class="ph-list-end">CSV</span>
+                </li>
+              </ul>
+
+              <p>
+                Sync runs through your own iCloud or Google Drive folder, so
+                the file is yours and we never see it. Deleting the app
+                deletes the data, which is worth knowing before you delete
+                the app.
+              </p>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= GET STARTED (dock) ================= -->
+          <article class="ph-sheet" id="app-start" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Get started</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">Pick two things.</h3>
+              <p class="lead">
+                The app is a one-time three dollars. Leave your email and we
+                will send the two store links, once.
+              </p>
+
+              <form class="signup" onsubmit="return false">
+                <div class="ph-field">
+                  <label class="ph-label" for="email">Email</label>
+                  <input
+                    class="ph-input"
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                  />
+                  <p class="ph-hint">One email with two links. That is the funnel.</p>
+                </div>
+                <div>
+                  <button class="ph-btn ph-btn-primary ph-btn-block" type="submit">
+                    Send the links
+                  </button>
+                </div>
+              </form>
+
+              <p class="fine">
+                Pawl is a fictional product. This page exists to show a
+                theme.
+              </p>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= PRICING (dock) ================= -->
+          <article class="ph-sheet" id="app-pricing" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Pricing</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">Three dollars, once.</h3>
+              <p class="lead">
+                No subscription. The page you are reading is the whole
+                pricing conversation.
+              </p>
+
+              <div class="stack">
+                <div class="ph-panel">
+                  <span class="eyebrow"><span class="ph-badge ph-badge-success">The app</span></span>
+                  <h4 class="ph-panel-title">Pawl</h4>
+                  <p class="price">$3<small> once, both platforms</small></p>
+                  <p class="ph-panel-body">
+                    Five things, the month line, CSV export. Every update so
+                    far has been free and we intend to keep it that way.
+                  </p>
+                </div>
+                <div class="ph-panel ph-panel-muted">
+                  <h4 class="ph-panel-title">Try it first</h4>
+                  <p class="price">$0<small> / 30 days</small></p>
+                  <p class="ph-panel-body">
+                    The full app for a month. It does not ask for a card, and
+                    at the end it does not delete your counts.
+                  </p>
+                </div>
+              </div>
+
+              <div class="cta-row">
+                <a class="ph-btn ph-btn-primary ph-btn-block" href="#app-start">Get the links</a>
+              </div>
+              <p class="fine">Family sharing is on. Buy it once for the house.</p>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= MANUAL (dock) ================= -->
+          <article class="ph-sheet" id="app-manual" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Manual</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">Short enough to read.</h3>
+              <p class="lead">
+                Four pages. These are the two people arrive needing.
+              </p>
+
+              <h4 class="app-sub">The export</h4>
+              <p>One row per day per thing, in the file you chose:</p>
+              <pre><code>date,thing,done
+2026-08-07,walk,1
+2026-08-07,strings,1
+2026-08-08,walk,1</code></pre>
+
+              <h4 class="app-sub">Guides</h4>
+              <ul class="ph-list">
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Choosing the five</span>
+                    <span class="ph-list-desc">Why the cap is the feature</span>
+                  </span>
+                  <span class="ph-list-end">3 min</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Reading the month line</span>
+                    <span class="ph-list-desc">What the numbers mean and what they leave out</span>
+                  </span>
+                  <span class="ph-list-end">2 min</span>
+                </li>
+                <li class="ph-list-row">
+                  <span>
+                    <span class="ph-list-name">Moving phones</span>
+                    <span class="ph-list-desc">Export, install, import, done</span>
+                  </span>
+                  <span class="ph-list-end">2 min</span>
+                </li>
+              </ul>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+
+          <!-- ================= ASK (dock) ================= -->
+          <article class="ph-sheet" id="app-ask" data-ph-app>
+            <header class="ph-sheet-header">
+              <span class="ph-sheet-controls" data-ph-controls></span>
+              <h2 class="ph-sheet-title">Ask</h2>
+            </header>
+            <div class="ph-sheet-body">
+              <h3 class="app-heading">A person answers.</h3>
+              <p class="lead">
+                There are two of us, so it is one of us, usually within a
+                day.
+              </p>
+
+              <ul class="ph-list stack">
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Email</span>
+                  <span class="ph-list-end">hello@pawl.example</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Bug reports</span>
+                  <span class="ph-list-end">same address</span>
+                </li>
+                <li class="ph-list-row">
+                  <span class="ph-list-name">Refunds</span>
+                  <span class="ph-list-end">ask, we say yes</span>
+                </li>
+              </ul>
+
+              <p>
+                Feature requests are welcome and most of them get turned
+                down. If yours is the sixth thing on the wheel, read
+                <a href="#app-how">How it works</a> first and then send it
+                anyway; the argument is how the cap keeps earning its place.
+              </p>
+            </div>
+            <div class="ph-sheet-foot" data-ph-home></div>
+          </article>
+        </main>
+
+        <!-- The dock: four pinned apps, none of which are on the grid, so
+             every app in this document lives in exactly one place. -->
+        <nav class="ph-dock" aria-label="Pinned apps">
+          <ul class="ph-dock-list">
+            <li>
+              <a class="ph-app" href="#app-start">
+                <span class="ph-app-plate ph-plate-accent" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 19V6" />
+                    <path d="M6 11.5L12 5.5l6 6" />
+                  </svg>
+                </span>
+                <span class="ph-app-label">Get started</span>
+              </a>
+            </li>
+            <li>
+              <a class="ph-app" href="#app-pricing">
+                <span class="ph-app-plate ph-plate-info" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.6 3.5H20v7.4l-8.6 8.6a2 2 0 0 1-2.8 0L4 14.9a2 2 0 0 1 0-2.8z" />
+                    <path d="M16 7.5v.01" stroke-width="2.5" />
+                  </svg>
+                </span>
+                <span class="ph-app-label">Pricing</span>
+              </a>
+            </li>
+            <li>
+              <a class="ph-app" href="#app-manual">
+                <span class="ph-app-plate ph-plate-muted" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 6c-1.5-1.4-3.5-2-6-2v14c2.5 0 4.5.6 6 2 1.5-1.4 3.5-2 6-2V4c-2.5 0-4.5.6-6 2z" />
+                    <path d="M12 6v14" />
+                  </svg>
+                </span>
+                <span class="ph-app-label">Manual</span>
+              </a>
+            </li>
+            <li>
+              <a class="ph-app" href="#app-ask">
+                <span class="ph-app-plate ph-plate-danger" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 12.5a7 7 0 0 1-7 7H8l-4 2.5.9-3.6A7 7 0 0 1 11 4.5h2a7 7 0 0 1 7 7z" />
+                  </svg>
+                </span>
+                <span class="ph-app-label">Ask</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </body>
+</html>
